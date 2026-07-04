@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>计算大闯关 - 20以内加减法</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans SC',sans-serif;background:#C8E6C9;color:#2D3436;min-height:100vh;display:flex;justify-content:center}
+.app{width:100%;max-width:900px;min-height:100vh;position:relative;overflow:hidden;background:#E8F5E9;box-shadow:0 0 80px rgba(0,0,0,0.1)}
+.screen{display:none;padding:24px;animation:fadeIn .4s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounceIn{0%{transform:scale(0)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes rainbow{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes popIn{0%{transform:scale(0) rotate(-180deg);opacity:0}60%{transform:scale(1.2) rotate(10deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes confettiFall{0%{transform:translateY(-100vh) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+@keyframes celebrate{0%{transform:scale(1) rotate(0)}25%{transform:scale(1.1) rotate(-5deg)}50%{transform:scale(1.2) rotate(5deg)}75%{transform:scale(1.1) rotate(-5deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes starPop{0%{transform:scale(0) rotate(-180deg);opacity:0}60%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* Home */
+.welcome{text-align:center;padding-top:40px}
+.welcome .logo{font-size:100px;animation:float 3s ease-in-out infinite;margin-bottom:16px;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.2))}
+.welcome h1{font-size:42px;font-weight:900;background:linear-gradient(135deg,#FF6B6B,#6C5CE7,#00B894);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;animation:rainbow 5s linear infinite}
+.welcome .sub{color:#555;font-size:20px;margin-bottom:30px;font-weight:500}
+.btn-row{display:flex;gap:16px;justify-content:center}
+.start-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:20px 50px;border:none;border-radius:50px;font-size:22px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff;font-family:'Noto Sans SC',sans-serif;box-shadow:0 8px 30px rgba(108,92,231,0.4);transition:all .3s}
+.learn-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:20px 50px;border:none;border-radius:50px;font-size:22px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#00B894,#55EFC4);color:#fff;font-family:'Noto Sans SC',sans-serif;box-shadow:0 8px 30px rgba(0,184,148,0.4);transition:all .3s}
+.mul-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:18px 50px;border:none;border-radius:50px;font-size:22px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#E17055,#FDCB6E);color:#fff;font-family:'Noto Sans SC',sans-serif;box-shadow:0 8px 30px rgba(225,112,85,0.4);transition:all .3s}
+.start-btn:hover,.learn-btn:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(108,92,231,0.5)}
+.start-btn:active,.learn-btn:active{transform:translateY(-1px)}
+
+/* Learn Screen */
+.learn-header{text-align:center;padding:20px 0 8px}
+.learn-header .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.learn-header .back-home{background:none;border:none;font-size:24px;cursor:pointer;padding:8px 16px;border-radius:12px;color:#555;transition:all .3s}
+.learn-header .back-home:hover{background:rgba(0,184,148,0.1);color:#00B894}
+.learn-header h2{font-size:30px;font-weight:900}
+.learn-header .tag{display:inline-block;padding:6px 18px;border-radius:20px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(135deg,#00B894,#55EFC4)}
+.method-list{display:flex;flex-direction:column;gap:20px;padding:16px 0 30px}
+.method-card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 6px 25px rgba(0,0,0,.08);cursor:pointer;transition:all .4s;border:2px solid #F0F0F5;overflow:hidden}
+.method-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.method-card .mc-head{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+.method-card .mc-icon{font-size:44px}
+.method-card .mc-title{font-size:24px;font-weight:800;color:#2D3436}
+.method-card .mc-sub{font-size:17px;color:#555}
+.method-card .mc-tag{display:inline-block;padding:4px 14px;border-radius:10px;font-size:15px;font-weight:700;color:#fff;margin-top:6px}
+.method-card .mc-tag.green{background:linear-gradient(135deg,#00B894,#55EFC4)}
+.method-card .mc-tag.blue{background:linear-gradient(135deg,#0984E3,#74B9FF)}
+.method-card .mc-tag.purple{background:linear-gradient(135deg,#6C5CE7,#A29BFE)}
+.method-card .mc-tag.orange{background:linear-gradient(135deg,#E17055,#FDCB6E)}
+
+/* Tutorial Detail */
+.tutorial{padding:0}
+.tutorial .tut-header{display:flex;align-items:center;gap:12px;padding:20px 0;border-bottom:2px solid #F0F0F5;margin-bottom:20px}
+.tutorial .tut-header .back-btn{background:none;border:none;font-size:26px;cursor:pointer;padding:8px 16px;border-radius:12px;color:#555}
+.tutorial .tut-header h3{font-size:28px;font-weight:800}
+.tutorial .tut-step{background:#fff;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 4px 15px rgba(0,0,0,.05);border-left:4px solid #6C5CE7;animation:slideUp .4s ease backwards}
+.tutorial .tut-step:nth-child(2){animation-delay:.1s}
+.tutorial .tut-step:nth-child(3){animation-delay:.2s}
+.tutorial .tut-step:nth-child(4){animation-delay:.3s}
+.tutorial .tut-step:nth-child(5){animation-delay:.4s}
+.tutorial .tut-step .step-num{display:inline-block;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff;font-size:17px;font-weight:700;text-align:center;line-height:34px;margin-right:10px}
+.tutorial .tut-step .step-text{font-size:20px;line-height:1.6;color:#2D3436}
+.tutorial .tut-step .step-text .hl{color:#E17055;font-weight:700}
+.tutorial .tut-step .step-text .blue{color:#0984E3;font-weight:700}
+.tutorial .tut-step .step-text .green{color:#00B894;font-weight:700}
+.tutorial .tut-example{background:linear-gradient(135deg,#F8F9FF,#EEF0FF);border:2px solid #D0D7FF;border-radius:16px;padding:20px;margin:20px 0}
+.tutorial .tut-example .ex-title{font-size:18px;font-weight:700;color:#6C5CE7;margin-bottom:10px}
+.tutorial .tut-example .ex-q{font-size:30px;font-weight:900;color:#2D3436;margin-bottom:14px;text-align:center}
+.tutorial .tut-example .ex-steps{font-size:18px;line-height:2;color:#2D3436}
+.tutorial .tut-example .ex-steps .hl{color:#E17055;font-weight:700}
+.tutorial .tut-example .ex-steps .green{color:#00B894;font-weight:700}
+.tutorial .tut-example .ex-final{font-size:24px;font-weight:900;color:#00B894;margin-top:12px;text-align:center;padding:14px;background:#D4EDDA;border-radius:10px}
+.tutorial .tut-tip{background:#FFF5F0;border-radius:12px;padding:18px;margin:16px 0;font-size:18px;color:#E17055;line-height:1.6}
+.tutorial .tut-tip b{font-weight:800}
+.tutorial .tut-btn{display:block;width:100%;padding:20px;border:none;border-radius:16px;font-size:22px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#00B894,#55EFC4);color:#fff;font-family:'Noto Sans SC',sans-serif;margin-top:20px;transition:all .3s}
+.tutorial .tut-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,184,148,0.3)}
+.home-progress{margin-top:36px;color:#555;font-size:18px}
+.home-progress .bar-wrap{height:10px;background:#C8E6C9;border-radius:5px;margin-top:10px;overflow:hidden}
+.home-progress .bar-fill{height:100%;background:linear-gradient(90deg,#00B894,#55EFC4);border-radius:5px;transition:width .5s}
+
+/* Level Select */
+.level-header{text-align:center;padding:20px 0 8px}
+.level-header .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.level-header .back-home{background:none;border:none;font-size:24px;cursor:pointer;padding:8px 16px;border-radius:12px;color:#555;transition:all .3s}
+.level-header .back-home:hover{background:rgba(108,92,231,0.1);color:#6C5CE7}
+.level-header h2{font-size:30px;font-weight:900}
+.level-header .tag{display:inline-block;padding:6px 18px;border-radius:20px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(135deg,#6C5CE7,#A29BFE)}
+.level-grid{display:flex;flex-direction:column;gap:16px;padding:16px 0 30px}
+.level-card{display:flex;align-items:center;gap:18px;background:#fff;border-radius:20px;padding:22px 24px;box-shadow:0 6px 25px rgba(0,0,0,.08);cursor:pointer;transition:all .4s;border:2px solid #F0F0F5;position:relative;overflow:hidden}
+.level-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.level-card .num{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;flex-shrink:0}
+.level-card .num.l1{background:linear-gradient(135deg,#00B894,#55EFC4)}
+.level-card .num.l2{background:linear-gradient(135deg,#0984E3,#74B9FF)}
+.level-card .num.l3{background:linear-gradient(135deg,#6C5CE7,#A29BFE)}
+.level-card .num.l4{background:linear-gradient(135deg,#E17055,#FDCB6E)}
+.level-card .num.l5{background:linear-gradient(135deg,#D63031,#FF7675)}
+.level-card .info{flex:1;text-align:left}
+.level-card .info h3{font-size:22px;font-weight:700;color:#2D3436}
+.level-card .info p{font-size:16px;color:#555;margin-top:4px}
+.level-card .stars{font-size:20px;color:#F39C12}
+.level-card .stars .empty{color:#DFE6E9}
+.level-card.completed{border-color:rgba(108,92,231,0.2)}
+
+/* Quiz */
+.quiz-header{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+.quiz-header .back-btn{background:none;border:none;font-size:26px;cursor:pointer;padding:8px 16px;border-radius:12px;color:#555}
+.quiz-header .level-tag{padding:6px 18px;border-radius:20px;font-size:18px;font-weight:700;color:#fff}
+.quiz-header .score{font-size:22px;font-weight:700;color:#F39C12}
+.progress-bar{height:8px;background:#C8E6C9;border-radius:4px;margin:16px 0;overflow:hidden}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,#00B894,#55EFC4);border-radius:4px;transition:width .4s}
+.question-number{text-align:center;font-size:18px;color:#888;font-weight:600;margin-bottom:12px}
+.question-text{text-align:center;font-size:36px;font-weight:900;color:#2D3436;margin-bottom:28px;line-height:1.4;padding:0 12px}
+.options{display:flex;flex-direction:column;gap:16px}
+.option{display:flex;align-items:center;gap:18px;background:#fff;border-radius:16px;padding:20px 24px;box-shadow:0 4px 15px rgba(0,0,0,.06);cursor:pointer;transition:all .3s;border:2px solid transparent;font-size:24px;font-weight:600}
+.option:hover{transform:translateX(5px);box-shadow:0 6px 20px rgba(0,0,0,.1);border-color:rgba(108,92,231,0.3)}
+.option:active{transform:scale(0.98)}
+.option .opt-label{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#DFE6E9,#B2BEC3);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+.option.correct{background:#D4EDDA;border-color:#28A745;animation:shake .3s}
+.option.wrong{background:#F8D7DA;border-color:#DC3545;animation:shake .4s}
+.option.disabled{pointer-events:none;opacity:0.6}
+
+/* Step Box */
+.step-box{background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border:2px solid #A5D6A7;border-radius:16px;padding:20px 24px;margin-top:20px;animation:slideUp .4s ease}
+.step-box .step-title{font-size:18px;font-weight:700;color:#2E7D32;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.step-box .step-content{font-size:20px;line-height:1.8;color:#2D3436}
+.step-box .step-content .highlight{color:#E17055;font-weight:700}
+.step-box .step-content .method{color:#6C5CE7;font-weight:700}
+.step-box .step-content .final{font-size:24px;font-weight:900;color:#00B894;margin-top:8px}
+
+.next-btn{display:block;width:100%;padding:20px;border:none;border-radius:16px;font-size:22px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff;font-family:'Noto Sans SC',sans-serif;margin-top:20px;transition:all .3s}
+.next-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(108,92,231,0.3)}
+
+/* Result */
+.result{text-align:center;padding:50px 0}
+.result .big-icon{font-size:100px;animation:bounceIn .6s ease}
+.result h2{font-size:36px;font-weight:900;margin:16px 0 6px}
+.result .subtitle{color:#555;font-size:20px;margin-bottom:20px}
+.result .stars-row{font-size:44px;margin:16px 0}
+.result .stars-row .star{display:inline-block;animation:starPop .5s ease backwards}
+.result .stars-row .star:nth-child(2){animation-delay:.2s}
+.result .stars-row .star:nth-child(3){animation-delay:.4s}
+.result .score-display{font-size:60px;font-weight:900;color:#6C5CE7;margin:10px 0}
+.result .score-label{color:#555;font-size:18px;margin-bottom:24px}
+.result .praise{font-size:20px;color:#E17055;font-weight:600;margin:16px 0;padding:16px;background:#FFF5F0;border-radius:12px}
+.result .actions{display:flex;flex-direction:column;gap:16px;margin-top:24px}
+.result .btn{display:block;width:100%;padding:20px;border:none;border-radius:16px;font-size:22px;font-weight:700;cursor:pointer;font-family:'Noto Sans SC',sans-serif;transition:all .3s}
+.result .btn-primary{background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff}
+.result .btn-outline{background:transparent;border:2px solid #B2BEC3;color:#555}
+.result .btn:hover{transform:translateY(-2px)}
+
+/* Confetti */
+.confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+.confetti-piece{position:absolute;width:10px;height:10px;top:-10px;animation:confettiFall 3s linear forwards}
+
+/* Voice Display */
+.voice-display{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);max-width:700px;background:linear-gradient(135deg,#2D3436,#636E72);color:#fff;padding:14px 28px;border-radius:16px;font-size:24px;font-weight:700;z-index:9999;opacity:0;transition:opacity .3s;box-shadow:0 8px 30px rgba(0,0,0,0.3);text-align:center;pointer-events:none}
+.voice-display.show{opacity:1}
+.voice-status{font-size:14px;color:#888;font-weight:500;padding:4px 12px;border-radius:8px;background:#F0F0F5;display:inline-block;margin-bottom:8px}
+.voice-status.ok{background:#D4EDDA;color:#00B894}
+.voice-status.fallback{background:#FFF5F0;color:#E17055}
+
+/* ====== 九九乘法表 ====== */
+.mul-table-wrap{padding:0 0 30px}
+.mul-row{margin-bottom:16px}
+.mul-row-title{font-size:22px;font-weight:800;color:#2D3436;margin-bottom:8px;padding:8px 14px;background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border-radius:12px;border-left:4px solid #00B894}
+.mul-row-head{display:flex;align-items:center;justify-content:space-between}
+.mul-voice-btn{background:linear-gradient(135deg,#00B894,#55EFC4);border:none;border-radius:12px;padding:8px 18px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;transition:all .3s;font-family:'Noto Sans SC',sans-serif}
+.mul-voice-btn:hover{transform:scale(1.05);box-shadow:0 4px 15px rgba(0,184,148,0.3)}
+.mul-voice-btn.playing{animation:pulse 1s infinite;background:linear-gradient(135deg,#E17055,#FDCB6E)}
+.mul-voice-all{background:linear-gradient(135deg,#6C5CE7,#A29BFE);border:none;border-radius:14px;padding:12px 24px;font-size:18px;font-weight:700;color:#fff;cursor:pointer;transition:all .3s;font-family:'Noto Sans SC',sans-serif;margin:12px 0}
+.mul-voice-all:hover{transform:scale(1.05);box-shadow:0 4px 15px rgba(108,92,231,0.3)}
+.mul-row-items{display:flex;flex-wrap:wrap;gap:10px}
+.mul-item{background:#fff;border-radius:12px;padding:12px 18px;box-shadow:0 3px 12px rgba(0,0,0,.06);font-size:20px;font-weight:700;color:#2D3436;border:2px solid #F0F0F5;cursor:pointer;transition:all .3s;user-select:none}
+.mul-item:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.1);border-color:#00B894}
+.mul-item .mul-expr{color:#2D3436}
+.mul-item .mul-ans{color:#00B894;font-weight:900}
+.mul-item .mul-rhyme{display:block;font-size:14px;color:#888;font-weight:500;margin-top:2px}
+.mul-item.learned{border-color:#00B894;background:#E8F5E9}
+
+/* Mul Practice */
+.mul-q-card{background:#fff;border-radius:20px;padding:30px;box-shadow:0 6px 25px rgba(0,0,0,.08);margin-top:20px;text-align:center}
+.mul-q-num{font-size:18px;color:#888;font-weight:600;margin-bottom:12px}
+.mul-q-text{font-size:42px;font-weight:900;color:#2D3436;margin-bottom:24px;line-height:1.4}
+.mul-q-text .blank{display:inline-block;width:80px;border-bottom:4px solid #6C5CE7;margin:0 4px}
+.mul-opts{display:flex;flex-direction:column;gap:14px}
+.mul-opt{display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:2px solid #F0F0F5;border-radius:16px;padding:18px 24px;font-size:26px;font-weight:700;color:#2D3436;cursor:pointer;transition:all .3s}
+.mul-opt:hover{border-color:#00B894;transform:translateY(-2px);box-shadow:0 4px 15px rgba(0,0,0,.08)}
+.mul-opt.correct{background:#D4EDDA;border-color:#28A745}
+.mul-opt.wrong{background:#F8D7DA;border-color:#DC3545}
+
+/* Mul Quiz */
+.mul-timer{font-size:20px;font-weight:700;color:#E17055;text-align:center;margin:8px 0}
+
+/* Mul Result */
+.mul-result-card{background:#fff;border-radius:20px;padding:36px;box-shadow:0 8px 30px rgba(0,0,0,.1);text-align:center}
+.mul-result-card .big-emoji{font-size:80px;margin-bottom:12px}
+.mul-result-card h2{font-size:32px;font-weight:900;margin-bottom:8px}
+.mul-result-card .sub{font-size:18px;color:#555;margin-bottom:20px}
+.mul-result-card .stat-row{display:flex;justify-content:center;gap:30px;margin:20px 0}
+.mul-result-card .stat{text-align:center}
+.mul-result-card .stat .num{font-size:36px;font-weight:900;color:#6C5CE7}
+.mul-result-card .stat .label{font-size:16px;color:#888;margin-top:4px}
+.mul-result-card .btns{display:flex;flex-direction:column;gap:12px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="voice-display" id="voiceDisplay"></div>
+
+<!-- Home Screen -->
+<div class="screen active" id="home">
+  <div class="welcome">
+    <div class="logo">🧮</div>
+    <h1>计算大闯关</h1>
+    <p class="sub">20以内加减法 · 99乘法表 · 快速口算</p>
+    <div class="btn-row">
+      <button class="learn-btn" onclick="showLearnMethods()">📖 学方法</button>
+      <button class="start-btn" onclick="showLevels()">🚀 开始闯关</button>
+    </div>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="mul-btn" onclick="showMultiplication()">✖️ 九九乘法表</button>
+    </div>
+    <div class="home-progress">
+      总进度 <span id="progressTotal">0</span> / 15 ⭐
+      <div class="bar-wrap"><div class="bar-fill" id="progressBar" style="width:0%"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Level Select Screen -->
+<div class="screen" id="levels">
+  <div class="level-header">
+    <div class="top-bar">
+      <button class="back-home" onclick="goHome()">‹ 返回</button>
+      <span class="tag">🧮 计算闯关</span>
+    </div>
+    <h2>🗺️ 选择关卡</h2>
+  </div>
+  <div class="level-grid" id="levelGrid"></div>
+</div>
+
+<!-- Learn Methods Screen -->
+<div class="screen" id="learnMethods">
+  <div class="learn-header">
+    <div class="top-bar">
+      <button class="back-home" onclick="goHome()">‹ 返回</button>
+      <span class="tag">📖 计算方法</span>
+    </div>
+    <h2>📐 学计算方法</h2>
+  </div>
+  <div class="method-list">
+    <div class="method-card" onclick="showTutorial(0)">
+      <div class="mc-head">
+        <div class="mc-icon">🔟</div>
+        <div><div class="mc-title">凑十法</div><div class="mc-sub">加法口算的核心方法</div><span class="mc-tag green">9+2, 8+5, 7+6...</span></div>
+      </div>
+    </div>
+    <div class="method-card" onclick="showTutorial(1)">
+      <div class="mc-head">
+        <div class="mc-icon">✂️</div>
+        <div><div class="mc-title">破十法</div><div class="mc-sub">退位减法的利器</div><span class="mc-tag blue">12-5, 13-7, 15-8...</span></div>
+      </div>
+    </div>
+    <div class="method-card" onclick="showTutorial(2)">
+      <div class="mc-head">
+        <div class="mc-icon">🔄</div>
+        <div><div class="mc-title">想加算减</div><div class="mc-sub">用加法口诀算减法</div><span class="mc-tag purple">11-4, 13-6, 14-7...</span></div>
+      </div>
+    </div>
+    <div class="method-card" onclick="showTutorial(3)">
+      <div class="mc-head">
+        <div class="mc-icon">⚖️</div>
+        <div><div class="mc-title">平十法</div><div class="mc-sub">把减数拆成两步减</div><span class="mc-tag orange">15-7, 16-8, 14-6...</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tutorial Detail Screen -->
+<div class="screen" id="tutorial">
+  <div id="tutorialContent"></div>
+</div>
+
+<!-- ====== 九九乘法表 ====== -->
+<!-- Multiplication Home -->
+<div class="screen" id="mulHome">
+  <div class="learn-header">
+    <div class="top-bar">
+      <button class="back-home" onclick="goHome()">‹ 返回</button>
+      <span class="tag">✖️ 九九乘法表</span>
+    </div>
+    <h2>✖️ 九九乘法表</h2>
+  </div>
+  <div class="method-list">
+    <div class="method-card" onclick="showMulTable()">
+      <div class="mc-head">
+        <div class="mc-icon">📚</div>
+        <div><div class="mc-title">看口诀表</div><div class="mc-sub">完整九九乘法表 + 口诀</div><span class="mc-tag green">1×1 到 9×9</span></div>
+      </div>
+    </div>
+    <div class="method-card" onclick="showMulPractice()">
+      <div class="mc-head">
+        <div class="mc-icon">🎯</div>
+        <div><div class="mc-title">背诵练习</div><div class="mc-sub">随机出题，巩固记忆</div><span class="mc-tag blue">口诀填空</span></div>
+      </div>
+    </div>
+    <div class="method-card" onclick="showMulQuiz()">
+      <div class="mc-head">
+        <div class="mc-icon">⚡</div>
+        <div><div class="mc-title">限时挑战</div><div class="mc-sub">看谁算得快！10道题计时</div><span class="mc-tag orange">速度比拼</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Multiplication Table View -->
+<div class="screen" id="mulTable">
+  <div class="learn-header">
+    <div class="top-bar">
+      <button class="back-home" onclick="showMultiplication()">‹ 返回</button>
+      <span class="tag">📚 口诀表</span>
+    </div>
+    <h2>📖 九九乘法口诀表</h2>
+  </div>
+  <div class="mul-table-wrap" id="mulTableWrap"></div>
+</div>
+
+<!-- Multiplication Practice (背诵填空) -->
+<div class="screen" id="mulPractice">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="showMultiplication()">‹</button>
+    <span class="level-tag" style="background:linear-gradient(135deg,#0984E3,#74B9FF)">背诵练习</span>
+    <span class="score" id="mulPracticeScore">⭐ 0</span>
+  </div>
+  <div class="progress-bar"><div class="fill" id="mulPracticeProgress" style="width:0%"></div></div>
+  <div id="mulPracticeContent"></div>
+</div>
+
+<!-- Multiplication Quiz (限时挑战) -->
+<div class="screen" id="mulQuiz">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="showMultiplication()">‹</button>
+    <span class="level-tag" style="background:linear-gradient(135deg,#E17055,#FDCB6E)">限时挑战</span>
+    <span class="score" id="mulQuizScore">⏱️ 0s | ⭐ 0</span>
+  </div>
+  <div class="progress-bar"><div class="fill" id="mulQuizProgress" style="width:0%"></div></div>
+  <div id="mulQuizContent"></div>
+</div>
+
+<!-- Multiplication Result -->
+<div class="screen" id="mulResult">
+  <div class="result" id="mulResultContent"></div>
+</div>
+
+<!-- Quiz Screen -->
+<div class="screen" id="quiz">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="backToLevels()">‹</button>
+    <span class="level-tag" id="quizLevelTag">第1关</span>
+    <span class="score" id="quizScore">⭐ 0</span>
+  </div>
+  <div class="progress-bar"><div class="fill" id="progressFill" style="width:0%"></div></div>
+  <div id="questionArea"></div>
+</div>
+
+<!-- Result Screen -->
+<div class="screen" id="result">
+  <div class="result">
+    <div class="big-icon" id="resultIcon">🎉</div>
+    <h2 id="resultTitle">太棒了！</h2>
+    <div class="subtitle" id="resultSubtitle">你真聪明！</div>
+    <div class="stars-row" id="resultStars"></div>
+    <div class="score-display" id="resultScore">0</div>
+    <div class="score-label">答对题数</div>
+    <div id="praiseText" class="praise" style="display:none"></div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="retryLevel()">🔄 再来一次</button>
+      <button class="btn btn-outline" onclick="backToLevels()">📋 返回关卡</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ====== 题库 ======
+const LEVELS = [
+  {
+    id:1, name:'凑十法入门', icon:'🟢', desc:'学会"看大数、拆小数、凑成十"',
+    method:'凑十法',
+    questions:[
+      {q:'9 + 2 = ?',opts:['10','11','12','13'],ans:2,steps:['凑十法：','看大数 <span class="highlight">9</span>，缺 <span class="highlight">1</span> 凑10','把 <span class="highlight">2</span> 拆成 <span class="highlight">1</span> 和 <span class="highlight">1</span>','9 + 1 = 10','10 + 1 = 11','<span class="final">所以 9 + 2 = 11 ✗</span>'],correctSteps:['凑十法：','看大数 <span class="highlight">9</span>，缺 <span class="highlight">1</span> 凑10','把 <span class="highlight">2</span> 拆成 <span class="highlight">1</span> 和 <span class="highlight">1</span>','9 + 1 = 10','10 + 1 = 11','<span class="final">所以 9 + 2 = 11</span>']},
+      {q:'8 + 5 = ?',opts:['12','13','14','11'],ans:1,steps:['凑十法：','看大数 <span class="highlight">8</span>，缺 <span class="highlight">2</span> 凑10','把 <span class="highlight">5</span> 拆成 <span class="highlight">2</span> 和 <span class="highlight">3</span>','8 + 2 = 10','10 + 3 = 13','<span class="final">所以 8 + 5 = 13</span>']},
+      {q:'7 + 6 = ?',opts:['12','13','14','11'],ans:1,steps:['凑十法：','看大数 <span class="highlight">7</span>，缺 <span class="highlight">3</span> 凑10','把 <span class="highlight">6</span> 拆成 <span class="highlight">3</span> 和 <span class="highlight">3</span>','7 + 3 = 10','10 + 3 = 13','<span class="final">所以 7 + 6 = 13</span>']},
+      {q:'6 + 5 = ?',opts:['10','11','12','13'],ans:1,steps:['凑十法：','看大数 <span class="highlight">6</span>，缺 <span class="highlight">4</span> 凑10','把 <span class="highlight">5</span> 拆成 <span class="highlight">4</span> 和 <span class="highlight">1</span>','6 + 4 = 10','10 + 1 = 11','<span class="final">所以 6 + 5 = 11</span>']},
+      {q:'9 + 4 = ?',opts:['12','13','14','11'],ans:1,steps:['凑十法：','看大数 <span class="highlight">9</span>，缺 <span class="highlight">1</span> 凑10','把 <span class="highlight">4</span> 拆成 <span class="highlight">1</span> 和 <span class="highlight">3</span>','9 + 1 = 10','10 + 3 = 13','<span class="final">所以 9 + 4 = 13</span>']},
+      {q:'8 + 4 = ?',opts:['11','12','13','14'],ans:1,steps:['凑十法：','看大数 <span class="highlight">8</span>，缺 <span class="highlight">2</span> 凑10','把 <span class="highlight">4</span> 拆成 <span class="highlight">2</span> 和 <span class="highlight">2</span>','8 + 2 = 10','10 + 2 = 12','<span class="final">所以 8 + 4 = 12</span>']},
+      {q:'7 + 5 = ?',opts:['11','12','13','10'],ans:1,steps:['凑十法：','看大数 <span class="highlight">7</span>，缺 <span class="highlight">3</span> 凑10','把 <span class="highlight">5</span> 拆成 <span class="highlight">3</span> 和 <span class="highlight">2</span>','7 + 3 = 10','10 + 2 = 12','<span class="final">所以 7 + 5 = 12</span>']},
+      {q:'9 + 3 = ?',opts:['11','12','13','10'],ans:1,steps:['凑十法：','看大数 <span class="highlight">9</span>，缺 <span class="highlight">1</span> 凑10','把 <span class="highlight">3</span> 拆成 <span class="highlight">1</span> 和 <span class="highlight">2</span>','9 + 1 = 10','10 + 2 = 12','<span class="final">所以 9 + 3 = 12</span>']},
+      {q:'8 + 7 = ?',opts:['14','15','16','13'],ans:1,steps:['凑十法：','看大数 <span class="highlight">8</span>，缺 <span class="highlight">2</span> 凑10','把 <span class="highlight">7</span> 拆成 <span class="highlight">2</span> 和 <span class="highlight">5</span>','8 + 2 = 10','10 + 5 = 15','<span class="final">所以 8 + 7 = 15</span>']},
+      {q:'6 + 7 = ?',opts:['12','13','14','11'],ans:1,steps:['凑十法：','看大数 <span class="highlight">7</span>，缺 <span class="highlight">3</span> 凑10','把 <span class="highlight">6</span> 拆成 <span class="highlight">3</span> 和 <span class="highlight">3</span>','7 + 3 = 10','10 + 3 = 13','<span class="final">所以 6 + 7 = 13</span>']},
+      {q:'9 + 6 = ?',opts:['14','15','16','13'],ans:1,steps:['凑十法：','看大数 <span class="highlight">9</span>，缺 <span class="highlight">1</span> 凑10','把 <span class="highlight">6</span> 拆成 <span class="highlight">1</span> 和 <span class="highlight">5</span>','9 + 1 = 10','10 + 5 = 15','<span class="final">所以 9 + 6 = 15</span>']},
+      {q:'9 + 8 = ?',opts:['16','17','18','15'],ans:1,steps:['凑十法：','看大数 <span class="highlight">9</span>，缺 <span class="highlight">1</span> 凑10','把 <span class="highlight">8</span> 拆成 <span class="highlight">1</span> 和 <span class="highlight">7</span>','9 + 1 = 10','10 + 7 = 17','<span class="final">所以 9 + 8 = 17</span>']}
+    ]
+  },
+  {
+    id:2, name:'破十法入门', icon:'🔵', desc:'学会"拆十减、加剩余"',
+    method:'破十法',
+    questions:[
+      {q:'12 - 5 = ?',opts:['6','7','8','9'],ans:1,steps:['破十法：','把 <span class="highlight">12</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">2</span>','先算 10 - 5 = <span class="highlight">5</span>','再算 5 + 2 = <span class="highlight">7</span>','<span class="final">所以 12 - 5 = 7</span>']},
+      {q:'13 - 7 = ?',opts:['5','6','7','8'],ans:1,steps:['破十法：','把 <span class="highlight">13</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">3</span>','先算 10 - 7 = <span class="highlight">3</span>','再算 3 + 3 = <span class="highlight">6</span>','<span class="final">所以 13 - 7 = 6</span>']},
+      {q:'15 - 8 = ?',opts:['6','7','8','9'],ans:1,steps:['破十法：','把 <span class="highlight">15</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">5</span>','先算 10 - 8 = <span class="highlight">2</span>','再算 2 + 5 = <span class="highlight">7</span>','<span class="final">所以 15 - 8 = 7</span>']},
+      {q:'11 - 4 = ?',opts:['6','7','8','5'],ans:1,steps:['破十法：','把 <span class="highlight">11</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">1</span>','先算 10 - 4 = <span class="highlight">6</span>','再算 6 + 1 = <span class="highlight">7</span>','<span class="final">所以 11 - 4 = 7</span>']},
+      {q:'14 - 6 = ?',opts:['7','8','9','6'],ans:1,steps:['破十法：','把 <span class="highlight">14</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">4</span>','先算 10 - 6 = <span class="highlight">4</span>','再算 4 + 4 = <span class="highlight">8</span>','<span class="final">所以 14 - 6 = 8</span>']},
+      {q:'16 - 9 = ?',opts:['6','7','8','5'],ans:1,steps:['破十法：','把 <span class="highlight">16</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">6</span>','先算 10 - 9 = <span class="highlight">1</span>','再算 1 + 6 = <span class="highlight">7</span>','<span class="final">所以 16 - 9 = 7</span>']},
+      {q:'13 - 5 = ?',opts:['7','8','9','6'],ans:1,steps:['破十法：','把 <span class="highlight">13</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">3</span>','先算 10 - 5 = <span class="highlight">5</span>','再算 5 + 3 = <span class="highlight">8</span>','<span class="final">所以 13 - 5 = 8</span>']},
+      {q:'17 - 8 = ?',opts:['8','9','10','7'],ans:1,steps:['破十法：','把 <span class="highlight">17</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">7</span>','先算 10 - 8 = <span class="highlight">2</span>','再算 2 + 7 = <span class="highlight">9</span>','<span class="final">所以 17 - 8 = 9</span>']},
+      {q:'11 - 3 = ?',opts:['7','8','9','6'],ans:1,steps:['破十法：','把 <span class="highlight">11</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">1</span>','先算 10 - 3 = <span class="highlight">7</span>','再算 7 + 1 = <span class="highlight">8</span>','<span class="final">所以 11 - 3 = 8</span>']},
+      {q:'12 - 4 = ?',opts:['7','8','9','6'],ans:1,steps:['破十法：','把 <span class="highlight">12</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">2</span>','先算 10 - 4 = <span class="highlight">6</span>','再算 6 + 2 = <span class="highlight">8</span>','<span class="final">所以 12 - 4 = 8</span>']},
+      {q:'15 - 7 = ?',opts:['7','8','9','6'],ans:1,steps:['破十法：','把 <span class="highlight">15</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">5</span>','先算 10 - 7 = <span class="highlight">3</span>','再算 3 + 5 = <span class="highlight">8</span>','<span class="final">所以 15 - 7 = 8</span>']},
+      {q:'14 - 9 = ?',opts:['4','5','6','3'],ans:1,steps:['破十法：','把 <span class="highlight">14</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">4</span>','先算 10 - 9 = <span class="highlight">1</span>','再算 1 + 4 = <span class="highlight">5</span>','<span class="final">所以 14 - 9 = 5</span>']}
+    ]
+  },
+  {
+    id:3, name:'混合挑战', icon:'🟣', desc:'加减混合 · 填空题 · 想加算减',
+    method:'混合',
+    questions:[
+      {q:'9 + ___ = 13',opts:['3','4','5','6'],ans:1,type:'fill',steps:['想加算减：','9 + ? = 13','想：9 + <span class="highlight">4</span> = 13','<span class="final">所以填 4</span>']},
+      {q:'___ + 8 = 15',opts:['6','7','8','9'],ans:1,type:'fill',steps:['想加算减：','? + 8 = 15','想：<span class="highlight">7</span> + 8 = 15','<span class="final">所以填 7</span>']},
+      {q:'13 - ___ = 6',opts:['5','6','7','8'],ans:1,type:'fill',steps:['想加算减：','13 - ? = 6','想：6 + <span class="highlight">7</span> = 13','<span class="final">所以填 7</span>']},
+      {q:'___ - 5 = 9',opts:['12','13','14','15'],ans:2,type:'fill',steps:['想加算减：','? - 5 = 9','想：5 + <span class="highlight">9</span> = 14','<span class="final">所以填 14</span>']},
+      {q:'8 + 7 = ?',opts:['14','15','16','13'],ans:1,steps:['凑十法：','看大数 <span class="highlight">8</span>，缺 <span class="highlight">2</span> 凑10','把 <span class="highlight">7</span> 拆成 <span class="highlight">2</span> 和 <span class="highlight">5</span>','8 + 2 = 10','10 + 5 = 15','<span class="final">所以 8 + 7 = 15</span>']},
+      {q:'14 - 6 = ?',opts:['7','8','9','6'],ans:1,steps:['破十法：','把 <span class="highlight">14</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">4</span>','先算 10 - 6 = <span class="highlight">4</span>','再算 4 + 4 = <span class="highlight">8</span>','<span class="final">所以 14 - 6 = 8</span>']},
+      {q:'6 + 9 = ?',opts:['14','15','16','13'],ans:1,steps:['凑十法：','看大数 <span class="highlight">9</span>，缺 <span class="highlight">1</span> 凑10','把 <span class="highlight">6</span> 拆成 <span class="highlight">1</span> 和 <span class="highlight">5</span>','9 + 1 = 10','10 + 5 = 15','<span class="final">所以 6 + 9 = 15</span>']},
+      {q:'16 - 7 = ?',opts:['8','9','10','7'],ans:1,steps:['破十法：','把 <span class="highlight">16</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">6</span>','先算 10 - 7 = <span class="highlight">3</span>','再算 3 + 6 = <span class="highlight">9</span>','<span class="final">所以 16 - 7 = 9</span>']},
+      {q:'5 + 8 = ?',opts:['12','13','14','11'],ans:1,steps:['凑十法：','看大数 <span class="highlight">8</span>，缺 <span class="highlight">2</span> 凑10','把 <span class="highlight">5</span> 拆成 <span class="highlight">2</span> 和 <span class="highlight">3</span>','8 + 2 = 10','10 + 3 = 13','<span class="final">所以 5 + 8 = 13</span>']},
+      {q:'11 - 6 = ?',opts:['4','5','6','7'],ans:1,steps:['破十法：','把 <span class="highlight">11</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">1</span>','先算 10 - 6 = <span class="highlight">4</span>','再算 4 + 1 = <span class="highlight">5</span>','<span class="final">所以 11 - 6 = 5</span>']},
+      {q:'___ + 6 = 14',opts:['6','7','8','9'],ans:2,type:'fill',steps:['想加算减：','? + 6 = 14','想：<span class="highlight">8</span> + 6 = 14','<span class="final">所以填 8</span>']},
+      {q:'15 - ___ = 8',opts:['5','6','7','8'],ans:2,type:'fill',steps:['想加算减：','15 - ? = 8','想：8 + <span class="highlight">7</span> = 15','<span class="final">所以填 7</span>']}
+    ]
+  },
+  {
+    id:4, name:'方法大比拼', icon:'🟡', desc:'选择方法 · 比较大小 · 连续计算',
+    method:'方法选择',
+    questions:[
+      {q:'8 + 7 用什么方法最好？',opts:['数数法','凑十法','破十法','口算法'],ans:1,type:'method',steps:['凑十法最方便：','看大数 <span class="highlight">8</span>，缺 <span class="highlight">2</span> 凑10','把 <span class="highlight">7</span> 拆成 <span class="highlight">2</span> 和 <span class="highlight">5</span>','8 + 2 = 10','10 + 5 = 15','<span class="method">💡 加法用凑十法最快！</span>']},
+      {q:'13 - 6 用什么方法最好？',opts:['凑十法','破十法','想加算减','数数法'],ans:1,type:'method',steps:['破十法最方便：','把 <span class="highlight">13</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">3</span>','先算 10 - 6 = <span class="highlight">4</span>','再算 4 + 3 = <span class="highlight">7</span>','<span class="method">💡 退位减法用破十法最快！</span>']},
+      {q:'15 - 9 还可以用什么方法？',opts:['凑十法','破十法','想加算减','以上都可以'],ans:2,type:'method',steps:['想加算减也很方便：','15 - 9 = ?','想：9 + <span class="highlight">6</span> = 15','<span class="final">所以 15 - 9 = 6</span>','<span class="method">💡 想加算减：记住加法口诀就能算减法！</span>']},
+      {q:'8 + 7 ○ 9 + 6（比较大小）',opts:['>','<','=','不确定'],ans:1,steps:['分别计算：','8 + 7 = <span class="highlight">15</span>（凑十法）','9 + 6 = <span class="highlight">15</span>（凑十法）','15 = 15','<span class="final">所以 8+7 = 9+6</span>']},
+      {q:'12 - 4 ○ 11 - 3（比较大小）',opts:['>','<','=','不确定'],ans:0,steps:['分别计算：','12 - 4 = <span class="highlight">8</span>（破十法）','11 - 3 = <span class="highlight">8</span>（破十法）','8 = 8','<span class="final">所以 12-4 = 11-3</span>']},
+      {q:'5 + 6 + 3 = ?',opts:['12','13','14','15'],ans:2,steps:['从左往右算：','先算 5 + 6 = <span class="highlight">11</span>（凑十法）','再算 11 + 3 = <span class="highlight">14</span>','<span class="final">所以 5 + 6 + 3 = 14</span>']},
+      {q:'17 - 8 - 2 = ?',opts:['5','6','7','8'],ans:2,steps:['从左往右算：','先算 17 - 8 = <span class="highlight">9</span>（破十法）','再算 9 - 2 = <span class="highlight">7</span>','<span class="final">所以 17 - 8 - 2 = 7</span>']},
+      {q:'9 + 5 - 4 = ?',opts:['9','10','11','8'],ans:1,steps:['从左往右算：','先算 9 + 5 = <span class="highlight">14</span>（凑十法）','再算 14 - 4 = <span class="highlight">10</span>','<span class="final">所以 9 + 5 - 4 = 10</span>']},
+      {q:'13 - 5 + 6 = ?',opts:['12','13','14','15'],ans:2,steps:['从左往右算：','先算 13 - 5 = <span class="highlight">8</span>（破十法）','再算 8 + 6 = <span class="highlight">14</span>（凑十法）','<span class="final">所以 13 - 5 + 6 = 14</span>']},
+      {q:'哪个算式的结果最大？',opts:['8+4','9+3','7+5','6+6'],ans:0,steps:['分别计算：','8 + 4 = <span class="highlight">12</span>','9 + 3 = <span class="highlight">12</span>','7 + 5 = <span class="highlight">12</span>','6 + 6 = <span class="highlight">12</span>','<span class="final">四个都等于12，一样大！</span>']},
+      {q:'小明有9颗糖，又买了6颗，吃了4颗，还剩几颗？',opts:['9','10','11','12'],ans:2,type:'word',steps:['分步计算：','先算 9 + 6 = <span class="highlight">15</span>（凑十法）','再算 15 - 4 = <span class="highlight">11</span>（破十法）','<span class="final">还剩 11 颗糖</span>']},
+      {q:'树上有14只鸟，飞走了7只，又飞来了3只，现在有几只？',opts:['8','9','10','11'],ans:2,type:'word',steps:['分步计算：','先算 14 - 7 = <span class="highlight">7</span>（破十法）','再算 7 + 3 = <span class="highlight">10</span>（凑十法）','<span class="final">现在有 10 只鸟</span>']}
+    ]
+  },
+  {
+    id:5, name:'终极挑战', icon:'🔴', desc:'刁钻题目 · 多步计算 · 脑筋急转弯',
+    method:'综合',
+    questions:[
+      {q:'7 + 8 = ?',opts:['14','15','16','13'],ans:1,steps:['凑十法：','看大数 <span class="highlight">8</span>，缺 <span class="highlight">2</span> 凑10','把 <span class="highlight">7</span> 拆成 <span class="highlight">2</span> 和 <span class="highlight">5</span>','8 + 2 = 10','10 + 5 = 15','<span class="final">所以 7 + 8 = 15</span>']},
+      {q:'15 - 8 = ?',opts:['6','7','8','9'],ans:1,steps:['破十法：','把 <span class="highlight">15</span> 拆成 <span class="highlight">10</span> 和 <span class="highlight">5</span>','先算 10 - 8 = <span class="highlight">2</span>','再算 2 + 5 = <span class="highlight">7</span>','<span class="final">所以 15 - 8 = 7</span>']},
+      {q:'___ + 9 = 16',opts:['6','7','8','9'],ans:1,type:'fill',steps:['想加算减：','? + 9 = 16','想：<span class="highlight">7</span> + 9 = 16','<span class="final">所以填 7</span>']},
+      {q:'18 - ___ = 9',opts:['7','8','9','10'],ans:2,type:'fill',steps:['想加算减：','18 - ? = 9','想：9 + <span class="highlight">9</span> = 18','<span class="final">所以填 9</span>']},
+      {q:'9 + 6 - 5 = ?',opts:['8','9','10','11'],ans:2,steps:['从左往右算：','先算 9 + 6 = <span class="highlight">15</span>（凑十法）','再算 15 - 5 = <span class="highlight">10</span>（破十法）','<span class="final">所以 9 + 6 - 5 = 10</span>']},
+      {q:'8 + 7 - 6 = ?',opts:['8','9','10','7'],ans:1,steps:['从左往右算：','先算 8 + 7 = <span class="highlight">15</span>（凑十法）','再算 15 - 6 = <span class="highlight">9</span>（破十法）','<span class="final">所以 8 + 7 - 6 = 9</span>']},
+      {q:'14 - 7 + 5 = ?',opts:['11','12','13','10'],ans:1,steps:['从左往右算：','先算 14 - 7 = <span class="highlight">7</span>（破十法）','再算 7 + 5 = <span class="highlight">12</span>（凑十法）','<span class="final">所以 14 - 7 + 5 = 12</span>']},
+      {q:'6 + 9 - 3 = ?',opts:['11','12','13','10'],ans:1,steps:['从左往右算：','先算 6 + 9 = <span class="highlight">15</span>（凑十法）','再算 15 - 3 = <span class="highlight">12</span>','<span class="final">所以 6 + 9 - 3 = 12</span>']},
+      {q:'8 + 7 ○ 9 + 5（比较大小）',opts:['>','<','=','不确定'],ans:0,steps:['分别计算：','8 + 7 = <span class="highlight">15</span>（凑十法）','9 + 5 = <span class="highlight">14</span>（凑十法）','15 > 14','<span class="final">所以 8+7 > 9+5</span>']},
+      {q:'13 - 6 ○ 14 - 8（比较大小）',opts:['>','<','=','不确定'],ans:0,steps:['分别计算：','13 - 6 = <span class="highlight">7</span>（破十法）','14 - 8 = <span class="highlight">6</span>（破十法）','7 > 6','<span class="final">所以 13-6 > 14-8</span>']},
+      {q:'小明有8本书，小红有7本书，小明给小红3本后，谁的书多？',opts:['小明多','小红多','一样多','不确定'],ans:1,type:'word',steps:['分步计算：','小明：8 - 3 = <span class="highlight">5</span>本','小红：7 + 3 = <span class="highlight">10</span>本','5 < 10','<span class="final">小红的书多！</span>']},
+      {q:'一个数 + 7 = 15，这个数 - 3 = ?',opts:['4','5','6','7'],ans:1,type:'multi',steps:['先求这个数：','? + 7 = 15','想：7 + <span class="highlight">8</span> = 15','再算 8 - 3 = <span class="highlight">5</span>','<span class="final">所以答案是 5</span>']}
+    ]
+  }
+];
+
+// ====== 游戏引擎 ======
+const STATE_KEY = 'calcGame';
+let state = {currentLevel:0,stars:[0,0,0,0,0],scores:[0,0,0,0,0]};
+let currentQ = null;
+
+function loadState(){try{const s=localStorage.getItem(STATE_KEY);if(s){const d=JSON.parse(s);state={...state,...d};}}catch(e){}}
+function saveState(){try{localStorage.setItem(STATE_KEY,JSON.stringify(state));}catch(e){}}
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function goHome(){updateHomeProgress();showScreen('home');}
+
+function showLevels(){
+  const grid=document.getElementById('levelGrid');
+  grid.innerHTML='';
+  LEVELS.forEach((lv,i)=>{
+    const stars=state.stars[i]||0;
+    const completed=stars>0;
+    const starStr='⭐'.repeat(stars)+'<span class="empty">☆</span>'.repeat(3-stars);
+    grid.innerHTML+=`<div class="level-card${completed?' completed':''}" onclick="startQuiz(${i})">
+      <div class="num l${i+1}">${i+1}</div>
+      <div class="info"><h3>${lv.icon} ${lv.name}</h3><p>${lv.desc}</p></div>
+      <div class="stars">${starStr}</div>
+    </div>`;
+  });
+  updateHomeProgress();
+  showScreen('levels');
+}
+
+function updateHomeProgress(){
+  const earned=state.stars.reduce((a,b)=>a+b,0);
+  const max=LEVELS.length*3;
+  document.getElementById('progressTotal').textContent=earned;
+  document.getElementById('progressBar').style.width=Math.min(earned/max*100,100)+'%';
+}
+
+function startQuiz(levelIndex){
+  const lv=LEVELS[levelIndex];
+  state.currentLevel=levelIndex;
+  const tag=document.getElementById('quizLevelTag');
+  tag.textContent=`第${levelIndex+1}关 · ${lv.name}`;
+  tag.style.background=['linear-gradient(135deg,#00B894,#55EFC4)','linear-gradient(135deg,#0984E3,#74B9FF)','linear-gradient(135deg,#6C5CE7,#A29BFE)','linear-gradient(135deg,#E17055,#FDCB6E)','linear-gradient(135deg,#D63031,#FF7675)'][levelIndex];
+  document.getElementById('quizScore').textContent='⭐ 0';
+  const shuffled=lv.questions.map(q=>({...q,opts:[...q.opts]}));
+  window.qs={levelIndex,currentQ:0,score:0,answered:false,questions:shuffled};
+  renderQuestion();
+  showScreen('quiz');
+}
+
+function renderQuestion(){
+  const qs=window.qs;
+  const q=qs.questions[qs.currentQ];
+  const total=qs.questions.length;
+  document.getElementById('progressFill').style.width=(qs.currentQ/total*100)+'%';
+  document.getElementById('quizScore').textContent=`⭐ ${qs.score}`;
+  const area=document.getElementById('questionArea');
+  const labels=['A','B','C','D'];
+  let optsHtml='';
+  q.opts.forEach((opt,i)=>{
+    optsHtml+=`<div class="option" onclick="selectAnswer(${i})"><span class="opt-label">${labels[i]}</span><span>${opt}</span></div>`;
+  });
+  area.innerHTML=`<div class="question-number">第${qs.currentQ+1}/${total}题</div>
+    <div class="question-text">${q.q}</div>
+    <div class="options" id="optionsArea">${optsHtml}</div>
+    <div id="stepArea"></div>
+    <div id="nextBtnArea"></div>`;
+  qs.answered=false;
+}
+
+function selectAnswer(idx){
+  const qs=window.qs;
+  if(qs.answered) return;
+  qs.answered=true;
+  const q=qs.questions[qs.currentQ];
+  const opts=document.querySelectorAll('.option');
+  opts.forEach((o,i)=>{
+    o.classList.add('disabled');
+    if(i===q.ans) o.classList.add('correct');
+    if(i===idx && idx!==q.ans) o.classList.add('wrong');
+  });
+  const isCorrect=idx===q.ans;
+  if(isCorrect) qs.score++;
+
+  // Show steps
+  const stepArea=document.getElementById('stepArea');
+  const steps=isCorrect?(q.steps||[]):(q.correctSteps||q.steps||[]);
+  const methodLabel=q.method||'计算方法';
+  stepArea.innerHTML=`<div class="step-box">
+    <div class="step-title">📝 ${isCorrect?'解题过程':'正确解法'}（${methodLabel}）</div>
+    <div class="step-content">${steps.join('<br>')}</div>
+  </div>`;
+
+  // Next button
+  const nextBtnArea=document.getElementById('nextBtnArea');
+  const isLast=qs.currentQ>=qs.questions.length-1;
+  nextBtnArea.innerHTML=`<button class="next-btn" onclick="${isLast?'showResult()':'nextQuestion()'}">${isLast?'查看成绩':'下一题 ➜'}</button>`;
+}
+
+function nextQuestion(){
+  window.qs.currentQ++;
+  renderQuestion();
+}
+
+function showResult(){
+  const qs=window.qs;
+  const total=qs.questions.length;
+  const score=qs.score;
+  const pct=score/total;
+  let stars=1;
+  if(pct>=0.9) stars=3;
+  else if(pct>=0.7) stars=2;
+
+  state.stars[qs.levelIndex]=Math.max(state.stars[qs.levelIndex]||0,stars);
+  state.scores[qs.levelIndex]=Math.max(state.scores[qs.levelIndex]||0,score);
+  saveState();
+
+  const icons=['😅','👍','🎉','🏆'];
+  const titles=['继续加油！','很不错！','太棒了！','满分达人！'];
+  const subtitles=['别灰心，多练习就好了！','再接再厉！','你真聪明！','全部答对，太厉害了！'];
+  const praises=['每一次练习都是进步！','计算就是要多练才能又快又准！','掌握方法比死记硬背更重要！'];
+
+  document.getElementById('resultIcon').textContent=icons[stars];
+  document.getElementById('resultTitle').textContent=titles[stars];
+  document.getElementById('resultSubtitle').textContent=subtitles[stars];
+  document.getElementById('resultScore').textContent=`${score}/${total}`;
+
+  let starsHtml='';
+  for(let i=0;i<3;i++){
+    starsHtml+=`<span class="star">${i<stars?'⭐':'☆'}</span>`;
+  }
+  document.getElementById('resultStars').innerHTML=starsHtml;
+
+  const praiseEl=document.getElementById('praiseText');
+  if(stars>=2){
+    praiseEl.style.display='block';
+    praiseEl.textContent=praises[Math.floor(Math.random()*praises.length)];
+  }else{
+    praiseEl.style.display='none';
+  }
+
+  showScreen('result');
+  if(stars>=2) launchConfetti();
+}
+
+function retryLevel(){startQuiz(state.currentLevel);}
+function backToLevels(){showLevels();}
+
+function launchConfetti(){
+  const colors=['#FF6B6B','#6C5CE7','#00B894','#FDCB6E','#E17055','#74B9FF'];
+  for(let i=0;i<30;i++){
+    const piece=document.createElement('div');
+    piece.className='confetti-piece';
+    piece.style.left=Math.random()*100+'%';
+    piece.style.background=colors[Math.floor(Math.random()*colors.length)];
+    piece.style.animationDelay=Math.random()*2+'s';
+    piece.style.animationDuration=(2+Math.random()*2)+'s';
+    piece.style.borderRadius=Math.random()>0.5?'50%':'0';
+    piece.style.width=(6+Math.random()*8)+'px';
+    piece.style.height=(6+Math.random()*8)+'px';
+    document.body.appendChild(piece);
+    setTimeout(()=>piece.remove(),4000);
+  }
+}
+
+// ====== 学习模式 ======
+const TUTORIALS = [
+  {
+    title:'凑十法',
+    icon:'🔟',
+    color:'#00B894',
+    intro:'凑十法是加法口算的核心方法。口诀：<b>"看大数，拆小数，凑成十，加剩余"</b>',
+    steps:[
+      {text:'看大数是几，缺几凑成 <span class="hl">10</span>'},
+      {text:'把小数拆成 <span class="hl">缺的数</span> 和 <span class="blue">剩余的数</span>'},
+      {text:'大数 + 缺的数 = <span class="green">10</span>'},
+      {text:'10 + 剩余的数 = <span class="green">答案</span>'}
+    ],
+    example:{
+      q:'8 + 5 = ?',
+      steps:[
+        '看大数 <span class="hl">8</span>，缺 <span class="hl">2</span> 凑10',
+        '把 <span class="hl">5</span> 拆成 <span class="hl">2</span> 和 <span class="blue">3</span>',
+        '8 + 2 = <span class="green">10</span>',
+        '10 + 3 = <span class="green">13</span>'
+      ],
+      final:'所以 8 + 5 = 13'
+    },
+    example2:{
+      q:'9 + 6 = ?',
+      steps:[
+        '看大数 <span class="hl">9</span>，缺 <span class="hl">1</span> 凑10',
+        '把 <span class="hl">6</span> 拆成 <span class="hl">1</span> 和 <span class="blue">5</span>',
+        '9 + 1 = <span class="green">10</span>',
+        '10 + 5 = <span class="green">15</span>'
+      ],
+      final:'所以 9 + 6 = 15'
+    },
+    tip:'💡 <b>小窍门：</b>9加几，答案个位比另一个数少1。比如9+6，个位是5（比6少1），答案就是15。'
+  },
+  {
+    title:'破十法',
+    icon:'✂️',
+    color:'#0984E3',
+    intro:'破十法是退位减法的核心方法。口诀：<b>"拆十减，加剩余"</b>',
+    steps:[
+      {text:'把十几拆成 <span class="hl">10</span> 和 <span class="blue">个位数</span>'},
+      {text:'用 <span class="hl">10</span> 减去减数'},
+      {text:'把得到的结果和 <span class="blue">个位数</span> 相加'},
+      {text:'得到 <span class="green">最终答案</span>'}
+    ],
+    example:{
+      q:'13 - 7 = ?',
+      steps:[
+        '把 <span class="hl">13</span> 拆成 <span class="hl">10</span> 和 <span class="blue">3</span>',
+        '先算 10 - 7 = <span class="green">3</span>',
+        '再算 3 + 3 = <span class="green">6</span>'
+      ],
+      final:'所以 13 - 7 = 6'
+    },
+    example2:{
+      q:'15 - 8 = ?',
+      steps:[
+        '把 <span class="hl">15</span> 拆成 <span class="hl">10</span> 和 <span class="blue">5</span>',
+        '先算 10 - 8 = <span class="green">2</span>',
+        '再算 2 + 5 = <span class="green">7</span>'
+      ],
+      final:'所以 15 - 8 = 7'
+    },
+    tip:'💡 <b>小窍门：</b>十几减9，答案个位比被减数个位多1。比如13-9，3+1=4，答案是4。'
+  },
+  {
+    title:'想加算减',
+    icon:'🔄',
+    color:'#6C5CE7',
+    intro:'想加算减是用加法口诀来算减法。口诀：<b>"做减想加，一句口诀算两道"</b>',
+    steps:[
+      {text:'看到减法题，想：减数 + <span class="hl">?</span> = 被减数'},
+      {text:'利用乘法口诀表中已经熟记的加法'},
+      {text:'那个 <span class="hl">?</span> 就是 <span class="green">答案</span>'}
+    ],
+    example:{
+      q:'11 - 4 = ?',
+      steps:[
+        '想：4 + <span class="hl">?</span> = 11',
+        '口诀：4 + <span class="hl">7</span> = 11',
+        '所以 11 - 4 = <span class="green">7</span>'
+      ],
+      final:'所以 11 - 4 = 7'
+    },
+    example2:{
+      q:'14 - 6 = ?',
+      steps:[
+        '想：6 + <span class="hl">?</span> = 14',
+        '口诀：6 + <span class="hl">8</span> = 14',
+        '所以 14 - 6 = <span class="green">8</span>'
+      ],
+      final:'所以 14 - 6 = 8'
+    },
+    tip:'💡 <b>小窍门：</b>如果你加法口诀背得熟，减法就不用重新算了！一句"四七二十八"可以同时算 4×7=28 和 28÷4=7。'
+  },
+  {
+    title:'平十法',
+    icon:'⚖️',
+    color:'#E17055',
+    intro:'平十法是把减数拆成两部分，分两步减。口诀：<b>"拆减数，先减平，再减余"</b>',
+    steps:[
+      {text:'把减数拆成两部分：一部分等于被减数的<span class="hl">个位数</span>'},
+      {text:'先用被减数减去<span class="hl">第一部分</span>，得到 <span class="green">10</span>'},
+      {text:'再用 10 减去<span class="blue">第二部分</span>'},
+      {text:'得到 <span class="green">最终答案</span>'}
+    ],
+    example:{
+      q:'15 - 7 = ?',
+      steps:[
+        '把 <span class="hl">7</span> 拆成 <span class="hl">5</span> 和 <span class="blue">2</span>（因为15的个位是5）',
+        '先算 15 - 5 = <span class="green">10</span>',
+        '再算 10 - 2 = <span class="green">8</span>'
+      ],
+      final:'所以 15 - 7 = 8'
+    },
+    example2:{
+      q:'14 - 6 = ?',
+      steps:[
+        '把 <span class="hl">6</span> 拆成 <span class="hl">4</span> 和 <span class="blue">2</span>（因为14的个位是4）',
+        '先算 14 - 4 = <span class="green">10</span>',
+        '再算 10 - 2 = <span class="green">8</span>'
+      ],
+      final:'所以 14 - 6 = 8'
+    },
+    tip:'💡 <b>小窍门：</b>平十法适合减数和被减数个位接近的情况。比如15-7，7拆成5和2，先减5得到10，再减2。'
+  }
+];
+
+function showLearnMethods(){
+  showScreen('learnMethods');
+}
+
+function showTutorial(idx){
+  const t=TUTORIALS[idx];
+  let html=`<div class="tutorial">
+    <div class="tut-header">
+      <button class="back-btn" onclick="showLearnMethods()">‹</button>
+      <h3>${t.icon} ${t.title}</h3>
+    </div>
+    <div class="tut-tip" style="background:linear-gradient(135deg,${t.color}15,${t.color}08);color:${t.color}">${t.intro}</div>
+    <div style="margin:16px 0 8px;font-size:16px;font-weight:800;color:#2D3436">📝 计算步骤：</div>`;
+  t.steps.forEach((s,i)=>{
+    html+=`<div class="tut-step" style="border-left-color:${t.color}">
+      <span class="step-num" style="background:linear-gradient(135deg,${t.color},${t.color}CC)">${i+1}</span>
+      <span class="step-text">${s.text}</span>
+    </div>`;
+  });
+  html+=`<div class="tut-example">
+    <div class="ex-title">📝 例题1：${t.example.q}</div>
+    <div class="ex-steps">${t.example.steps.join('<br>')}</div>
+    <div class="ex-final">${t.example.final}</div>
+  </div>`;
+  html+=`<div class="tut-example">
+    <div class="ex-title">📝 例题2：${t.example2.q}</div>
+    <div class="ex-steps">${t.example2.steps.join('<br>')}</div>
+    <div class="ex-final">${t.example2.final}</div>
+  </div>`;
+  html+=`<div class="tut-tip">${t.tip}</div>`;
+  html+=`<button class="tut-btn" onclick="showLevels()">🚀 去闯关练习</button>`;
+  html+=`</div>`;
+  document.getElementById('tutorialContent').innerHTML=html;
+  showScreen('tutorial');
+}
+
+// ====== 九九乘法表 ======
+const MUL_RHYMES = {
+  '1':['一一得一','一二得二','一三得三','一四得四','一五得五','一六得六','一七得七','一八得八','一九得九'],
+  '2':['二二得四','二三得六','二四得八','二五一十','二六十二','二七十四','二八十六','二九十八'],
+  '3':['三三得九','三四十二','三五十五','三六十八','三七二十一','三八二十四','三九二十七'],
+  '4':['四四十六','四五二十','四六二十四','四七二十八','四八三十二','四九三十六'],
+  '5':['五五二十五','五六三十','五七三十五','五八四十','五九四十五'],
+  '6':['六六三十六','六七四十二','六八四十八','六九五十四'],
+  '7':['七七四十九','七八五十六','七九六十三'],
+  '8':['八八六十四','八九七十二'],
+  '9':['九九八十一']
+};
+
+function showMultiplication(){showScreen('mulHome')}
+
+// 语音朗读
+let voiceQueue=[];
+let voicePlaying=false;
+let voiceSupported=true;
+let voiceReady=false;
+
+// 检测语音是否可用
+function checkVoice(){
+  if(!('speechSynthesis' in window)){
+    voiceSupported=false;
+    return false;
+  }
+  // 尝试找中文语音
+  const voices=window.speechSynthesis.getVoices();
+  const hasCN=voices.some(v=>v.lang&&v.lang.startsWith('zh'));
+  if(!hasCN){
+    // Chrome加载语音是异步的，等一拨
+    window.speechSynthesis.onvoiceschanged=()=>{
+      const v2=window.speechSynthesis.getVoices();
+      if(v2.some(v=>v.lang&&v.lang.startsWith('zh'))) voiceReady=true;
+    };
+  }else{
+    voiceReady=true;
+  }
+  return true;
+}
+
+function getVoiceDisplay(){
+  if(!voiceSupported) return '⚠️ 浏览器不支持语音朗读，将以<strong>字幕模式</strong>显示';
+  if(!voiceReady) return '🔊 语音朗读（中文语音包未检测到，将以字幕模式显示）';
+  return '🔊 语音朗读中...';
+}
+
+function speak(text,cb){
+  // 显示当前朗读内容（视觉反馈）
+  const d=document.getElementById('voiceDisplay');
+  if(d){d.innerHTML='🔊 '+text;d.classList.add('show');}
+  if(!('speechSynthesis' in window)||!voiceReady){
+    // 无语音：显示文本后延迟继续
+    setTimeout(()=>{
+      if(d){d.classList.remove('show');}
+      if(cb)cb();
+    },800);
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='zh-CN';
+  u.rate=0.85;
+  u.pitch=1.1;
+  u.onend=()=>{
+    if(d){d.classList.remove('show');}
+    if(cb)cb();
+  };
+  u.onerror=()=>{
+    if(d){d.classList.remove('show');}
+    if(cb)cb();
+  };
+  // 设置中文语音（如果有）
+  const voices=window.speechSynthesis.getVoices();
+  const cnVoice=voices.find(v=>v.lang&&v.lang.startsWith('zh'));
+  if(cnVoice) u.voice=cnVoice;
+  window.speechSynthesis.speak(u);
+}
+
+function speakSequence(texts,btn,cb){
+  if(voicePlaying){
+    window.speechSynthesis.cancel();
+    voicePlaying=false;
+    if(btn) btn.classList.remove('playing');
+    if(cb) cb();
+    return;
+  }
+  voicePlaying=true;
+  if(btn) btn.classList.add('playing');
+  let idx=0;
+  function next(){
+    if(idx>=texts.length||!voicePlaying){
+      voicePlaying=false;
+      if(btn) btn.classList.remove('playing');
+      if(cb) cb();
+      return;
+    }
+    speak(texts[idx],()=>{idx++;next();});
+  }
+  next();
+}
+
+function stopVoice(){
+  window.speechSynthesis.cancel();
+  voicePlaying=false;
+  document.querySelectorAll('.mul-voice-btn.playing').forEach(b=>b.classList.remove('playing'));
+}
+
+function showMulTable(){
+  // 检测语音
+  checkVoice();
+  const vStatus=document.getElementById('voiceStatus');
+  let statusHtml='';
+  if(!voiceSupported){
+    statusHtml='<span class="voice-status fallback">⚠️ 浏览器不支持语音朗读，使用字幕模式</span>';
+  }else if(!voiceReady){
+    statusHtml='<span class="voice-status fallback">🔊 未检测到中文语音包，使用字幕模式展示</span>';
+  }else{
+    statusHtml='<span class="voice-status ok">🔊 语音朗读就绪</span>';
+  }
+  let html=`<div style="text-align:center">${statusHtml}</div>`;
+  html+=`<button class="mul-voice-all" id="mulVoiceAllBtn" onclick="readAllMulTable()">🔊 朗读全部口诀</button>`;
+  for(let i=1;i<=9;i++){
+    html+=`<div class="mul-row">
+      <div class="mul-row-head">
+        <div class="mul-row-title" style="flex:1">${i}的乘法口诀</div>
+        <button class="mul-voice-btn" onclick="readMulRow(${i},this)">🔊 读${i}的</button>
+      </div>
+      <div class="mul-row-items">`;
+    for(let j=i;j<=9;j++){
+      html+=`<div class="mul-item" onclick="speak('${MUL_RHYMES[i][j-i]}')">
+        <span class="mul-expr">${i}×${j}=</span><span class="mul-ans">${i*j}</span>
+        <span class="mul-rhyme">${MUL_RHYMES[i][j-i]}</span>
+      </div>`;
+    }
+    html+=`</div></div>`;
+  }
+  document.getElementById('mulTableWrap').innerHTML=html;
+  showScreen('mulTable');
+}
+
+function readMulRow(row,btn){
+  const texts=[];
+  for(let j=row;j<=9;j++){
+    texts.push(`${row}乘${j}等于${row*j}，${MUL_RHYMES[row][j-row]}`);
+  }
+  speakSequence(texts,btn);
+}
+
+function readAllMulTable(){
+  const btn=document.getElementById('mulVoiceAllBtn');
+  const texts=[];
+  for(let i=1;i<=9;i++){
+    texts.push(`${i}的乘法口诀`);
+    for(let j=i;j<=9;j++){
+      texts.push(`${i}乘${j}等于${i*j}，${MUL_RHYMES[i][j-i]}`);
+    }
+  }
+  speakSequence(texts,btn);
+}
+
+// ====== 背诵练习 ======
+let mulPracticeState={current:0,score:0,questions:[]};
+
+function showMulPractice(){
+  const qs=[];
+  for(let i=1;i<=9;i++){
+    for(let j=i;j<=9;j++){
+      qs.push({a:i,b:i*j<=90?j:0,ans:i*j,rhyme:MUL_RHYMES[i][j-i],i,j});
+    }
+  }
+  // 随机抽取20题
+  const shuffled=qs.sort(()=>Math.random()-0.5).slice(0,20);
+  mulPracticeState={current:0,score:0,questions:shuffled};
+  document.getElementById('mulPracticeScore').textContent='⭐ 0';
+  renderMulPracticeQ();
+  showScreen('mulPractice');
+}
+
+function renderMulPracticeQ(){
+  const s=mulPracticeState;
+  if(s.current>=s.questions.length){
+    showMulResult('practice',s.score,s.questions.length);
+    return;
+  }
+  const q=s.questions[s.current];
+  document.getElementById('mulPracticeProgress').style.width=(s.current/s.questions.length*100)+'%';
+  // 生成干扰项
+  const opts=new Set([q.ans]);
+  while(opts.size<4){
+    const off=Math.floor(Math.random()*11)-5;
+    const fake=q.ans+off;
+    if(fake>0&&fake<=81&&fake!==q.ans) opts.add(fake);
+  }
+  const optArr=[...opts].sort(()=>Math.random()-0.5);
+  const labels=['A','B','C','D'];
+  let html=`<div class="mul-q-card">
+    <div class="mul-q-num">第 ${s.current+1} / ${s.questions.length} 题</div>
+    <div class="mul-q-text">${q.i} × ${q.j} = <span class="blank"></span></div>
+    <div class="mul-opts">`;
+  optArr.forEach((o,idx)=>{
+    html+=`<div class="mul-opt" onclick="checkMulPractice(${o},${q.ans},this)">
+      <span style="color:#888;font-size:18px">${labels[idx]}</span> ${o}
+    </div>`;
+  });
+  html+=`</div><div style="margin-top:16px;font-size:18px;color:#888">口诀：<b style="color:#00B894">${q.rhyme}</b></div></div>`;
+  document.getElementById('mulPracticeContent').innerHTML=html;
+}
+
+function checkMulPractice(chosen,correct,el){
+  if(el.classList.contains('correct')||el.classList.contains('wrong')) return;
+  const allOpts=document.querySelectorAll('#mulPracticeContent .mul-opt');
+  if(chosen===correct){
+    el.classList.add('correct');
+    mulPracticeState.score++;
+    document.getElementById('mulPracticeScore').textContent=`⭐ ${mulPracticeState.score}`;
+    setTimeout(()=>{mulPracticeState.current++;renderMulPracticeQ()},800);
+  }else{
+    el.classList.add('wrong');
+    allOpts.forEach(o=>{
+      if(parseInt(o.textContent.replace(/[ABCD]\s*/,''))===correct) o.classList.add('correct');
+    });
+    setTimeout(()=>{mulPracticeState.current++;renderMulPracticeQ()},1200);
+  }
+}
+
+// ====== 限时挑战 ======
+let mulQuizState={current:0,score:0,questions:[],startTime:0,timer:null};
+
+function showMulQuiz(){
+  const qs=[];
+  for(let i=1;i<=9;i++){
+    for(let j=i;j<=9;j++){
+      qs.push({a:i,b:j,ans:i*j});
+    }
+  }
+  const shuffled=qs.sort(()=>Math.random()-0.5).slice(0,10);
+  mulQuizState={current:0,score:0,questions:shuffled,startTime:Date.now(),timer:null};
+  document.getElementById('mulQuizScore').textContent='⏱️ 0s | ⭐ 0';
+  // 启动计时器
+  mulQuizState.timer=setInterval(()=>{
+    const elapsed=((Date.now()-mulQuizState.startTime)/1000).toFixed(1);
+    document.getElementById('mulQuizScore').textContent=`⏱️ ${elapsed}s | ⭐ ${mulQuizState.score}`;
+  },100);
+  renderMulQuizQ();
+  showScreen('mulQuiz');
+}
+
+function renderMulQuizQ(){
+  const s=mulQuizState;
+  if(s.current>=s.questions.length){
+    clearInterval(s.timer);
+    const elapsed=((Date.now()-s.startTime)/1000).toFixed(1);
+    showMulResult('quiz',s.score,s.questions.length,elapsed);
+    return;
+  }
+  const q=s.questions[s.current];
+  document.getElementById('mulQuizProgress').style.width=(s.current/s.questions.length*100)+'%';
+  const opts=new Set([q.ans]);
+  while(opts.size<4){
+    const off=Math.floor(Math.random()*11)-5;
+    const fake=q.ans+off;
+    if(fake>0&&fake<=81&&fake!==q.ans) opts.add(fake);
+  }
+  const optArr=[...opts].sort(()=>Math.random()-0.5);
+  const labels=['A','B','C','D'];
+  let html=`<div class="mul-q-card">
+    <div class="mul-q-num">第 ${s.current+1} / ${s.questions.length} 题</div>
+    <div class="mul-q-text" style="font-size:52px">${q.a} × ${q.b} = ?</div>
+    <div class="mul-opts">`;
+  optArr.forEach((o,idx)=>{
+    html+=`<div class="mul-opt" onclick="checkMulQuiz(${o},${q.ans},this)">
+      <span style="color:#888;font-size:18px">${labels[idx]}</span> ${o}
+    </div>`;
+  });
+  html+=`</div></div>`;
+  document.getElementById('mulQuizContent').innerHTML=html;
+}
+
+function checkMulQuiz(chosen,correct,el){
+  if(el.classList.contains('correct')||el.classList.contains('wrong')) return;
+  const allOpts=document.querySelectorAll('#mulQuizContent .mul-opt');
+  if(chosen===correct){
+    el.classList.add('correct');
+    mulQuizState.score++;
+    setTimeout(()=>{mulQuizState.current++;renderMulQuizQ()},500);
+  }else{
+    el.classList.add('wrong');
+    allOpts.forEach(o=>{
+      if(parseInt(o.textContent.replace(/[ABCD]\s*/,''))===correct) o.classList.add('correct');
+    });
+    setTimeout(()=>{mulQuizState.current++;renderMulQuizQ()},800);
+  }
+}
+
+// ====== 乘法结果 ======
+function showMulResult(type,score,total,elapsed){
+  const pct=Math.round(score/total*100);
+  let emoji='🎉',msg='太棒了！';
+  if(pct<60){emoji='💪';msg='继续努力！'}
+  else if(pct<80){emoji='👍';msg='不错哦！'}
+  else if(pct<100){emoji='🌟';msg='非常好！'}
+  else{emoji='🏆';msg='满分！完美！'}
+
+  let html=`<div class="mul-result-card">
+    <div class="big-emoji">${emoji}</div>
+    <h2>${msg}</h2>
+    <div class="sub">${type==='practice'?'背诵练习':'限时挑战'}完成！</div>
+    <div class="stat-row">
+      <div class="stat"><div class="num">${score}/${total}</div><div class="label">正确题数</div></div>
+      <div class="stat"><div class="num">${pct}%</div><div class="label">正确率</div></div>
+      ${elapsed?`<div class="stat"><div class="num">${elapsed}s</div><div class="label">用时</div></div>`:''}
+    </div>
+    <div class="btns">
+      <button class="result btn btn-primary" onclick="${type==='practice'?'showMulPractice()':'showMulQuiz()'}">🔄 再来一轮</button>
+      <button class="result btn btn-outline" onclick="showMultiplication()">🏠 返回</button>
+    </div>
+  </div>`;
+  document.getElementById('mulResultContent').innerHTML=html;
+  showScreen('mulResult');
+  if(pct>=80) launchConfetti();
+}
+
+// Init
+checkVoice();
+loadState();
+updateHomeProgress();
+</script>
+</body>
+</html>
