@@ -1769,7 +1769,7 @@ function showCharHome(){
     const chars=cat.start===108?CHAR_DATA.slice(cat.start):CHAR_DATA.slice(cat.start,Math.min(cat.end,CHAR_DATA.length));
     html+='<div class="mul-q-card" style="text-align:left;margin-bottom:12px"><div style="font-size:18px;font-weight:700;margin-bottom:10px">'+cat.name+' ('+chars.length+'字)</div><div style="display:flex;flex-wrap:wrap;gap:6px">';
     chars.forEach(c=>{
-      html+='<div style="background:#F8F9FF;border:1px solid #E8E8F0;border-radius:8px;padding:6px 10px;text-align:center;min-width:44px"><div style="font-size:20px;font-weight:700">'+c.char+'</div><div style="font-size:11px;color:#888">'+c.pinyin+'</div></div>';
+      html+='<div style="background:#F8F9FF;border:1px solid #E8E8F0;border-radius:8px;padding:6px 10px;text-align:center;min-width:44px;cursor:pointer" onclick="speak(\''+c.char+'\')"><div style="font-size:20px;font-weight:700">'+c.char+'</div><div style="font-size:11px;color:#888">'+c.pinyin+'</div></div>';
     });
     html+='</div></div>';
   });
@@ -1780,6 +1780,7 @@ function startWordGame(){
   const shuffled=[...CHAR_DATA].filter(c=>c.words&&c.words.length>0).sort(()=>Math.random()-0.5).slice(0,15);
   charGameState={mode:'word',questions:shuffled,idx:0,correct:0};
   renderCharQ();showScreen('chineseHome');
+  setTimeout(()=>{if(charGameState.questions[0])speak(charGameState.questions[0].char);},500);
 }
 function startRecogGame(){
   const shuffled=[...WORD_PAIRS].sort(()=>Math.random()-0.5).slice(0,15);
@@ -1813,7 +1814,7 @@ function renderCharQ(){
   let html='<div class="mul-q-card" style="text-align:left">';
   html+='<div class="top-bar" style="margin-bottom:12px"><button class="back-home" onclick="showCharHome()">‹ 返回</button><span style="font-size:16px;color:#888">第 '+(s.idx+1)+' / '+s.questions.length+' 题</span></div>';
   if(s.mode==='word'){
-    html+='<div style="font-size:52px;font-weight:900;text-align:center;margin:20px 0;background:#FFF3E0;padding:20px;border-radius:16px">'+q.char+'<div style="font-size:16px;color:#888">'+q.pinyin+'</div></div>';
+    html+='<div style="font-size:52px;font-weight:900;text-align:center;margin:20px 0;background:#FFF3E0;padding:20px;border-radius:16px;cursor:pointer" onclick="speak(\''+q.char+'\')">'+q.char+'<div style="font-size:16px;color:#888">'+q.pinyin+' 🔊</div></div>';
     html+='<div style="font-size:18px;text-align:center;margin-bottom:12px">下面哪个词包含「'+q.char+'」？</div><div class="mul-opts">';
     const correctWord=q.words[Math.floor(Math.random()*q.words.length)];
     // 用相似字的词做干扰项
