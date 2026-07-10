@@ -1838,16 +1838,25 @@ function renderCharQ(){
   }else if(s.mode==='recog'){
     html+='<div style="font-size:36px;font-weight:900;text-align:center;margin:20px 0;background:#E8F5E9;padding:20px;border-radius:16px">'+q.blank+'</div>';
     html+='<div style="font-size:18px;text-align:center;margin-bottom:12px">横线上应该填哪个字？</div><div class="mul-opts">';
-    q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+q.ans+',this)" style="font-size:32px">'+o+'</div>';});
+    // 打乱选项顺序
+    let rOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
+    rOpts.sort(()=>Math.random()-0.5);
+    rOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+(o.isCorrect?i:-1)+',this)" style="font-size:32px">'+o.text+'</div>';});
   }else if(s.mode==='duoyinzi'){
     html+='<div style="font-size:22px;font-weight:700;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
-    q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+q.ans+',this)">'+o+'</div>';});
+    let dOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
+    dOpts.sort(()=>Math.random()-0.5);
+    dOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+(o.isCorrect?i:-1)+',this)">'+o.text+'</div>';});
   }else if(s.mode==='radical'){
     html+='<div style="font-size:22px;font-weight:700;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
-    q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+q.ans+',this)">'+o+'</div>';});
+    let rOpts2=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
+    rOpts2.sort(()=>Math.random()-0.5);
+    rOpts2.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+(o.isCorrect?i:-1)+',this)">'+o.text+'</div>';});
   }else if(s.mode==='xingjin'){
     html+='<div style="font-size:20px;font-weight:700;margin-bottom:20px;line-height:1.8">'+q.q+'</div><div class="mul-opts">';
-    q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+q.ans+',this)">'+o+'</div>';});
+    let xOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
+    xOpts.sort(()=>Math.random()-0.5);
+    xOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+(o.isCorrect?i:-1)+',this)">'+o.text+'</div>';});
   }
   html+='</div></div>';
   document.getElementById('chineseContent').innerHTML=html;
@@ -2063,7 +2072,9 @@ function renderReadingQ(){
   html+='<div style="font-size:16px;color:#888;margin-bottom:8px">📖 '+article.title+'（第'+(s.qIdx+1)+'/'+article.questions.length+'题）</div>';
   html+='<div style="background:#F8F9FF;border-radius:12px;padding:16px;margin-bottom:20px;font-size:18px;line-height:1.8;border-left:4px solid #6C5CE7">'+article.passage+'</div>';
   html+='<div style="font-size:22px;font-weight:700;margin-bottom:16px">'+q.q+'</div><div class="mul-opts">';
-  q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkReading('+i+','+q.ans+',this)">'+String.fromCharCode(65+i)+'. '+o+'</div>';});
+  let rdOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
+  rdOpts.sort(()=>Math.random()-0.5);
+  rdOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkReading('+i+','+(o.isCorrect?i:-1)+',this)">'+String.fromCharCode(65+i)+'. '+o.text+'</div>';});
   html+='</div></div>';
   document.getElementById('chineseContent').innerHTML=html;
   showScreen('chineseHome');
@@ -2095,7 +2106,9 @@ function renderSentenceQ(){
   html+='<div class="mul-q-card" style="text-align:left"><div style="font-size:16px;color:#888;margin-bottom:8px">第 '+(s.idx+1)+' / '+SENTENCE_QS.length+' 题</div>';
   html+='<div style="font-size:14px;color:#6C5CE7;font-weight:700;margin-bottom:8px">'+q.type+'</div>';
   html+='<div style="font-size:22px;font-weight:700;white-space:pre-line;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
-  q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkSentence('+i+','+q.ans+',this)">'+String.fromCharCode(65+i)+'. '+o+'</div>';});
+  let sOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
+  sOpts.sort(()=>Math.random()-0.5);
+  sOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkSentence('+i+','+(o.isCorrect?i:-1)+',this)">'+String.fromCharCode(65+i)+'. '+o.text+'</div>';});
   html+='</div></div>';
   document.getElementById('chineseContent').innerHTML=html;
 }
@@ -2125,7 +2138,9 @@ function renderPunctQ(){
   let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#E17055,#FDCB6E)">❓ 标点符号</span></div><h2>❓ 标点符号练习</h2></div>';
   html+='<div class="mul-q-card" style="text-align:left"><div style="font-size:16px;color:#888;margin-bottom:8px">第 '+(s.idx+1)+' / '+PUNCT_QS.length+' 题</div>';
   html+='<div style="font-size:22px;font-weight:700;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
-  q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkPunct('+i+','+q.ans+',this)">'+String.fromCharCode(65+i)+'. '+o+'</div>';});
+  let pOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
+  pOpts.sort(()=>Math.random()-0.5);
+  pOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkPunct('+i+','+(o.isCorrect?i:-1)+',this)">'+String.fromCharCode(65+i)+'. '+o.text+'</div>';});
   html+='</div></div>';
   document.getElementById('chineseContent').innerHTML=html;
 }
