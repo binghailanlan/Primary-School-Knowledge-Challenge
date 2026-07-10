@@ -224,7 +224,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:#C8E6C9;color:#2D3436;min-
 .poem-title{font-size:26px;font-weight:900;color:#2D3436}
 .poem-author{font-size:16px;color:#888;margin:4px 0 12px}
 .poem-body{font-size:28px;font-weight:700;line-height:2;color:#2D3436;padding:16px;background:#F8F9FF;border-radius:12px;border-left:4px solid #6C5CE7}
-.fill-input{width:60px;border-bottom:3px solid #6C5CE7;background:transparent;text-align:center;font-size:26px;font-weight:700;margin:0 2px;font-family:'Noto Sans SC',sans-serif;outline:none}
+.fill-input{min-width:80px;width:auto;border-bottom:3px solid #6C5CE7;background:transparent;text-align:center;font-size:26px;font-weight:700;margin:0 4px;padding:2px 6px;font-family:'Noto Sans SC',sans-serif;outline:none}
 .fill-input:focus{border-color:#E17055}
 </style>
 </head>
@@ -1811,16 +1811,29 @@ function renderCharQ(){
   }
   const q=s.questions[s.idx];
   let html='<div class="mul-q-card" style="text-align:left">';
-  html+='<div style="font-size:16px;color:#888;margin-bottom:8px">第 '+(s.idx+1)+' / '+s.questions.length+' 题</div>';
+  html+='<div class="top-bar" style="margin-bottom:12px"><button class="back-home" onclick="showCharHome()">‹ 返回</button><span style="font-size:16px;color:#888">第 '+(s.idx+1)+' / '+s.questions.length+' 题</span></div>';
   if(s.mode==='word'){
     html+='<div style="font-size:52px;font-weight:900;text-align:center;margin:20px 0;background:#FFF3E0;padding:20px;border-radius:16px">'+q.char+'<div style="font-size:16px;color:#888">'+q.pinyin+'</div></div>';
     html+='<div style="font-size:18px;text-align:center;margin-bottom:12px">下面哪个词包含「'+q.char+'」？</div><div class="mul-opts">';
-    const correctWord=q.words[0];
-    let wrongPool=CHAR_DATA.filter(x=>x.char!==q.char&&x.words&&x.words.length>0).flatMap(x=>x.words);
+    const correctWord=q.words[Math.floor(Math.random()*q.words.length)];
+    // 用相似字的词做干扰项
+    let wrongPool=[];
+    if(q.similar&&q.similar.length>0){
+      q.similar.forEach(s=>{
+        const sc=CHAR_DATA.find(x=>x.char===s);
+        if(sc&&sc.words)wrongPool.push(...sc.words);
+      });
+    }
+    if(wrongPool.length<3){
+      const extras=CHAR_DATA.filter(x=>x.char!==q.char&&!q.similar.includes(x.char)&&x.words&&x.words.length>0).flatMap(x=>x.words);
+      wrongPool.push(...extras);
+    }
+    wrongPool=[...new Set(wrongPool)].filter(w=>w!==correctWord);
     wrongPool.sort(()=>Math.random()-0.5);
     let opts=[correctWord,...wrongPool.slice(0,3)];
     opts.sort(()=>Math.random()-0.5);
-    opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+opts.indexOf(correctWord)+',this)">'+o+'</div>';});
+    const ci=opts.indexOf(correctWord);
+    opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+ci+',this)">'+o+'</div>';});
   }else if(s.mode==='recog'){
     html+='<div style="font-size:36px;font-weight:900;text-align:center;margin:20px 0;background:#E8F5E9;padding:20px;border-radius:16px">'+q.blank+'</div>';
     html+='<div style="font-size:18px;text-align:center;margin-bottom:12px">横线上应该填哪个字？</div><div class="mul-opts">';
