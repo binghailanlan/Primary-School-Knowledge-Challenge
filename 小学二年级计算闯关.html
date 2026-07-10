@@ -1276,6 +1276,7 @@ function showChineseHome(){
 
 function showPoemHome(){
   let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">📜 古诗背诵</span></div><h2>📜 二年级必背古诗</h2></div>';
+  html+='<div class="mul-q-card" style="margin-bottom:20px"><div style="display:flex;align-items:center;gap:16px"><div style="font-size:40px">🎯</div><div style="flex:1"><div style="font-size:22px;font-weight:800">选择下一句挑战</div><div style="font-size:16px;color:#888">随机抽取古诗，看上句选下句，10道题</div></div><button class="start-btn" style="padding:14px 28px;font-size:18px" onclick="startPoemLineQuiz()">🚀 开始挑战</button></div></div>';
   ['二年级上册','二年级下册'].forEach(sem=>{
     html+='<h3 style="font-size:24px;font-weight:800;margin:20px 0 12px">📚 '+sem+'</h3><div class="method-list">';
     CHINESE_POEMS[sem].forEach((p,i)=>{
@@ -1290,6 +1291,7 @@ function showPoemHome(){
 }
 
 let poemQuizState={poem:null};
+let poemLineQuizState={questions:[],idx:0,correct:0};
 function startPoemQuiz(sem,idx){
   const poem=CHINESE_POEMS[sem][idx];
   poemQuizState={poem};
@@ -1330,6 +1332,63 @@ function checkPoemQuiz(){
 }
 function revealPoemQuiz(){
   document.querySelectorAll('#chineseContent .fill-input').forEach(inp=>{inp.value=inp.getAttribute('data-ans');inp.style.borderColor='#6C5CE7';inp.style.color='#6C5CE7';});
+}
+
+// ====== 选择下一句 选择题 ======
+function startPoemLineQuiz(){
+  // 收集所有古诗的每一行
+  let allLines=[];
+  ['二年级上册','二年级下册'].forEach(sem=>{
+    CHINESE_POEMS[sem].forEach(p=>{
+      p.lines.forEach((line,idx)=>{
+        if(idx<p.lines.length-1){
+          allLines.push({poem:p.title,cur:line,next:p.lines[idx+1]});
+        }
+      });
+    });
+  });
+  // 随机抽取10题
+  allLines.sort(()=>Math.random()-0.5);
+  const questions=allLines.slice(0,Math.min(10,allLines.length));
+  poemLineQuizState={questions,idx:0,correct:0};
+  renderPoemLineQ();
+  showScreen('chineseHome');
+}
+function renderPoemLineQ(){
+  const s=poemLineQuizState;
+  if(s.idx>=s.questions.length){
+    const t=s.questions.length;const pct=Math.round(s.correct/t*100);
+    document.getElementById('chineseContent').innerHTML='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">📜 选择下一句</span></div></div><div class="mul-q-card"><div style="font-size:50px;margin-bottom:12px">'+(pct>=80?'🎉':'💪')+'</div><div style="font-size:28px;font-weight:900">选择下一句完成！</div><div style="font-size:22px;color:#555;margin:8px 0 16px">答对 '+s.correct+'/'+t+'（'+pct+'%）</div><button class="next-btn" onclick="startPoemLineQuiz()">🔄 再来一轮</button><button class="next-btn" onclick="showChineseHome()" style="background:transparent;color:#888;border:2px solid #ddd">🏠 返回</button></div>';
+    return;
+  }
+  const q=s.questions[s.idx];
+  // 生成干扰项：从其他诗句中随机取3个
+  let allLines=[];
+  ['二年级上册','二年级下册'].forEach(sem=>{
+    CHINESE_POEMS[sem].forEach(p=>{p.lines.forEach(l=>{if(l!==q.next)allLines.push(l);});});
+  });
+  allLines.sort(()=>Math.random()-0.5);
+  let opts=[q.next,...allLines.slice(0,3)];
+  opts.sort(()=>Math.random()-0.5);
+  let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showPoemHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">📜 选择下一句</span></div><h2>📜 选择下一句</h2></div>';
+  html+='<div class="mul-q-card" style="text-align:left">';
+  html+='<div style="font-size:16px;color:#888;margin-bottom:8px">第 '+(s.idx+1)+' / '+s.questions.length+' 题 · 出自《'+q.poem+'》</div>';
+  html+='<div style="font-size:26px;font-weight:700;margin-bottom:8px;background:#FFF3E0;padding:16px;border-radius:12px;text-align:center;border-left:4px solid #E17055">'+q.cur+'</div>';
+  html+='<div style="font-size:16px;color:#888;margin-bottom:12px;text-align:center">⬇️ 请选择下一句</div><div class="mul-opts">';
+  opts.forEach((o,i)=>{
+    const idx=q.next===o?i:-1;
+    html+='<div class="mul-opt" onclick="checkPoemLine('+idx+',this)">'+o+'</div>';
+  });
+  html+='</div></div>';
+  document.getElementById('chineseContent').innerHTML=html;
+}
+function checkPoemLine(chosen,el){
+  if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
+  const allOpts=document.querySelectorAll('#chineseContent .mul-opt');
+  allOpts.forEach(o=>o.classList.add('disabled-after'));
+  if(chosen>=0){el.classList.add('correct');poemLineQuizState.correct++;}
+  else{el.classList.add('wrong');allOpts.forEach(o=>{if(o.textContent===poemLineQuizState.questions[poemLineQuizState.idx].next)o.classList.add('correct');});}
+  setTimeout(()=>{poemLineQuizState.idx++;renderPoemLineQ()},1200);
 }
 
 function showTextbookHome(){
