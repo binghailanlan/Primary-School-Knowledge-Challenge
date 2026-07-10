@@ -1393,7 +1393,10 @@ function renderReadingPracticeQ(){
   html+='<div style="font-size:16px;color:#888;margin-bottom:8px">📖 '+article.title+' '+article.level+'（第'+(s.qIdx+1)+'/'+article.questions.length+'题）</div>';
   html+='<div style="background:#F8F9FF;border-radius:12px;padding:16px;margin-bottom:20px;font-size:18px;line-height:1.8;border-left:4px solid #6C5CE7">'+article.passage+'</div>';
   html+='<div style="font-size:22px;font-weight:700;margin-bottom:16px">'+q.q+'</div><div class="mul-opts">';
-  q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkReadingPractice('+i+','+q.ans+',this)">'+o+'</div>';});
+  let rpOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
+  rpOpts.sort(()=>Math.random()-0.5);
+  const rpCi=rpOpts.findIndex(o=>o.isCorrect);
+  rpOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkReadingPractice('+i+','+rpCi+',this)">'+o.text+'</div>';});
   html+='</div></div>';
   document.getElementById('chineseContent').innerHTML=html;
 }
@@ -1401,8 +1404,18 @@ function checkReadingPractice(chosen,correct,el){
   if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
   const allOpts=document.querySelectorAll('#chineseContent .mul-opt');
   allOpts.forEach(o=>o.classList.add('disabled-after'));
-  if(chosen===correct){el.classList.add('correct');readingPracticeState.correct++;}
-  else{el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});}
+  if(chosen===correct){
+    el.classList.add('correct');readingPracticeState.correct++;
+    const cheers=['太棒了！🎉','答对了！⭐','真厉害！💪','非常好！👍','满分！💯','你真聪明！🧠'];
+    const cheer=cheers[Math.floor(Math.random()*cheers.length)];
+    const reward=document.createElement('div');
+    reward.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#00B894,#55EFC4);color:white;font-size:32px;font-weight:900;padding:24px 40px;border-radius:20px;z-index:9999;text-align:center;box-shadow:0 8px 32px rgba(0,184,148,0.4)';
+    reward.textContent=cheer;
+    document.body.appendChild(reward);
+    setTimeout(()=>reward.remove(),800);
+  }else{
+    el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});
+  }
   setTimeout(()=>{readingPracticeState.qIdx++;renderReadingPracticeQ()},1200);
 }
 
@@ -1838,25 +1851,28 @@ function renderCharQ(){
   }else if(s.mode==='recog'){
     html+='<div style="font-size:36px;font-weight:900;text-align:center;margin:20px 0;background:#E8F5E9;padding:20px;border-radius:16px">'+q.blank+'</div>';
     html+='<div style="font-size:18px;text-align:center;margin-bottom:12px">横线上应该填哪个字？</div><div class="mul-opts">';
-    // 打乱选项顺序
     let rOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
     rOpts.sort(()=>Math.random()-0.5);
-    rOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+(o.isCorrect?i:-1)+',this)" style="font-size:32px">'+o.text+'</div>';});
+    const rCi=rOpts.findIndex(o=>o.isCorrect);
+    rOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+rCi+',this)" style="font-size:32px">'+o.text+'</div>';});
   }else if(s.mode==='duoyinzi'){
     html+='<div style="font-size:22px;font-weight:700;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
     let dOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
     dOpts.sort(()=>Math.random()-0.5);
-    dOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+(o.isCorrect?i:-1)+',this)">'+o.text+'</div>';});
+    const dCi=dOpts.findIndex(o=>o.isCorrect);
+    dOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+dCi+',this)">'+o.text+'</div>';});
   }else if(s.mode==='radical'){
     html+='<div style="font-size:22px;font-weight:700;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
     let rOpts2=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
     rOpts2.sort(()=>Math.random()-0.5);
-    rOpts2.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+(o.isCorrect?i:-1)+',this)">'+o.text+'</div>';});
+    const raCi=rOpts2.findIndex(o=>o.isCorrect);
+    rOpts2.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+raCi+',this)">'+o.text+'</div>';});
   }else if(s.mode==='xingjin'){
     html+='<div style="font-size:20px;font-weight:700;margin-bottom:20px;line-height:1.8">'+q.q+'</div><div class="mul-opts">';
     let xOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
     xOpts.sort(()=>Math.random()-0.5);
-    xOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+(o.isCorrect?i:-1)+',this)">'+o.text+'</div>';});
+    const xCi=xOpts.findIndex(o=>o.isCorrect);
+    xOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+xCi+',this)">'+o.text+'</div>';});
   }
   html+='</div></div>';
   document.getElementById('chineseContent').innerHTML=html;
@@ -1865,9 +1881,32 @@ function checkCharQ(chosen,correct,el){
   if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
   const allOpts=document.querySelectorAll('#chineseContent .mul-opt');
   allOpts.forEach(o=>o.classList.add('disabled-after'));
-  if(chosen===correct){el.classList.add('correct');charGameState.correct++;}
-  else{el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});}
-  setTimeout(()=>{charGameState.idx++;renderCharQ()},1200);
+  const s=charGameState;
+  const q=s.questions[s.idx];
+  if(chosen===correct){
+    el.classList.add('correct');s.correct++;
+    // 奖励提示
+    const cheers=['太棒了！🎉','答对了！⭐','真厉害！💪','非常好！👍','满分！💯','你真聪明！🧠'];
+    const cheer=cheers[Math.floor(Math.random()*cheers.length)];
+    const reward=document.createElement('div');
+    reward.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#00B894,#55EFC4);color:white;font-size:32px;font-weight:900;padding:24px 40px;border-radius:20px;z-index:9999;text-align:center;box-shadow:0 8px 32px rgba(0,184,148,0.4);animation:popIn 0.3s ease';
+    reward.textContent=cheer;
+    document.body.appendChild(reward);
+    setTimeout(()=>reward.remove(),800);
+  }else{
+    el.classList.add('wrong');
+    allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});
+    // 错题提示
+    let expText='';
+    if(q.exp)expText='<div style="margin-top:10px;font-size:15px;color:#555;background:#FFF9E6;padding:10px 14px;border-radius:10px;border-left:4px solid #F39C12">'+q.exp+'</div>';
+    else expText='<div style="margin-top:10px;font-size:15px;color:#555;background:#FFF9E6;padding:10px 14px;border-radius:10px;border-left:4px solid #F39C12">正确答案已标绿，请记住！</div>';
+    const notice=document.createElement('div');
+    notice.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;max-width:500px;width:90%';
+    notice.innerHTML=expText;
+    document.body.appendChild(notice);
+    setTimeout(()=>notice.remove(),2000);
+  }
+  setTimeout(()=>{s.idx++;renderCharQ()},1200);
 }
 
 // ====== 语文模块函数 ======
@@ -1987,8 +2026,7 @@ function renderPoemLineQ(){
   html+='<div style="font-size:26px;font-weight:700;margin-bottom:8px;background:#FFF3E0;padding:16px;border-radius:12px;text-align:center;border-left:4px solid #E17055">'+q.cur+'</div>';
   html+='<div style="font-size:16px;color:#888;margin-bottom:12px;text-align:center">⬇️ 请选择下一句</div><div class="mul-opts">';
   opts.forEach((o,i)=>{
-    const idx=q.next===o?i:-1;
-    html+='<div class="mul-opt" onclick="checkPoemLine('+idx+',this)">'+o+'</div>';
+    html+='<div class="mul-opt" onclick="checkPoemLine('+i+',this)">'+o+'</div>';
   });
   html+='</div></div>';
   document.getElementById('chineseContent').innerHTML=html;
@@ -1997,8 +2035,20 @@ function checkPoemLine(chosen,el){
   if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
   const allOpts=document.querySelectorAll('#chineseContent .mul-opt');
   allOpts.forEach(o=>o.classList.add('disabled-after'));
-  if(chosen>=0){el.classList.add('correct');poemLineQuizState.correct++;}
-  else{el.classList.add('wrong');allOpts.forEach(o=>{if(o.textContent===poemLineQuizState.questions[poemLineQuizState.idx].next)o.classList.add('correct');});}
+  const q=poemLineQuizState.questions[poemLineQuizState.idx];
+  if(chosen>=0&&allOpts[chosen].textContent===q.next){
+    el.classList.add('correct');poemLineQuizState.correct++;
+    const cheers=['太棒了！🎉','答对了！⭐','真厉害！💪','非常好！👍','满分！💯','你真聪明！🧠'];
+    const cheer=cheers[Math.floor(Math.random()*cheers.length)];
+    const reward=document.createElement('div');
+    reward.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#00B894,#55EFC4);color:white;font-size:32px;font-weight:900;padding:24px 40px;border-radius:20px;z-index:9999;text-align:center;box-shadow:0 8px 32px rgba(0,184,148,0.4)';
+    reward.textContent=cheer;
+    document.body.appendChild(reward);
+    setTimeout(()=>reward.remove(),800);
+  }else{
+    el.classList.add('wrong');
+    allOpts.forEach(o=>{if(o.textContent===q.next)o.classList.add('correct');});
+  }
   setTimeout(()=>{poemLineQuizState.idx++;renderPoemLineQ()},1200);
 }
 
@@ -2074,7 +2124,8 @@ function renderReadingQ(){
   html+='<div style="font-size:22px;font-weight:700;margin-bottom:16px">'+q.q+'</div><div class="mul-opts">';
   let rdOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
   rdOpts.sort(()=>Math.random()-0.5);
-  rdOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkReading('+i+','+(o.isCorrect?i:-1)+',this)">'+String.fromCharCode(65+i)+'. '+o.text+'</div>';});
+  const rdCi=rdOpts.findIndex(o=>o.isCorrect);
+  rdOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkReading('+i+','+rdCi+',this)">'+String.fromCharCode(65+i)+'. '+o.text+'</div>';});
   html+='</div></div>';
   document.getElementById('chineseContent').innerHTML=html;
   showScreen('chineseHome');
@@ -2083,8 +2134,18 @@ function checkReading(chosen,correct,el){
   if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
   const allOpts=document.querySelectorAll('#chineseContent .mul-opt');
   allOpts.forEach(o=>o.classList.add('disabled-after'));
-  if(chosen===correct){el.classList.add('correct');readingQuizState.correct++;}
-  else{el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});}
+  if(chosen===correct){
+    el.classList.add('correct');readingQuizState.correct++;
+    const cheers=['太棒了！🎉','答对了！⭐','真厉害！💪','非常好！👍','满分！💯','你真聪明！🧠'];
+    const cheer=cheers[Math.floor(Math.random()*cheers.length)];
+    const reward=document.createElement('div');
+    reward.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#00B894,#55EFC4);color:white;font-size:32px;font-weight:900;padding:24px 40px;border-radius:20px;z-index:9999;text-align:center;box-shadow:0 8px 32px rgba(0,184,148,0.4)';
+    reward.textContent=cheer;
+    document.body.appendChild(reward);
+    setTimeout(()=>reward.remove(),800);
+  }else{
+    el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});
+  }
   setTimeout(()=>{readingQuizState.qIdx++;renderReadingQ()},1200);
 }
 
@@ -2108,7 +2169,8 @@ function renderSentenceQ(){
   html+='<div style="font-size:22px;font-weight:700;white-space:pre-line;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
   let sOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
   sOpts.sort(()=>Math.random()-0.5);
-  sOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkSentence('+i+','+(o.isCorrect?i:-1)+',this)">'+String.fromCharCode(65+i)+'. '+o.text+'</div>';});
+  const sCi=sOpts.findIndex(o=>o.isCorrect);
+  sOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkSentence('+i+','+sCi+',this)">'+String.fromCharCode(65+i)+'. '+o.text+'</div>';});
   html+='</div></div>';
   document.getElementById('chineseContent').innerHTML=html;
 }
@@ -2116,8 +2178,25 @@ function checkSentence(chosen,correct,el){
   if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
   const allOpts=document.querySelectorAll('#chineseContent .mul-opt');
   allOpts.forEach(o=>o.classList.add('disabled-after'));
-  if(chosen===correct){el.classList.add('correct');sentenceState.correct++;}
-  else{el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});}
+  const q=SENTENCE_QS[sentenceState.idx];
+  if(chosen===correct){
+    el.classList.add('correct');sentenceState.correct++;
+    const cheers=['太棒了！🎉','答对了！⭐','真厉害！💪','非常好！👍','满分！💯','你真聪明！🧠'];
+    const cheer=cheers[Math.floor(Math.random()*cheers.length)];
+    const reward=document.createElement('div');
+    reward.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#00B894,#55EFC4);color:white;font-size:32px;font-weight:900;padding:24px 40px;border-radius:20px;z-index:9999;text-align:center;box-shadow:0 8px 32px rgba(0,184,148,0.4)';
+    reward.textContent=cheer;
+    document.body.appendChild(reward);
+    setTimeout(()=>reward.remove(),800);
+  }else{
+    el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});
+    let expText='<div style="margin-top:10px;font-size:15px;color:#555;background:#FFF9E6;padding:10px 14px;border-radius:10px;border-left:4px solid #F39C12">'+q.exp+'</div>';
+    const notice=document.createElement('div');
+    notice.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;max-width:500px;width:90%';
+    notice.innerHTML=expText;
+    document.body.appendChild(notice);
+    setTimeout(()=>notice.remove(),2000);
+  }
   setTimeout(()=>{sentenceState.idx++;renderSentenceQ()},1200);
 }
 
@@ -2140,7 +2219,8 @@ function renderPunctQ(){
   html+='<div style="font-size:22px;font-weight:700;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
   let pOpts=q.opts.map((o,i)=>({text:o,isCorrect:i===q.ans}));
   pOpts.sort(()=>Math.random()-0.5);
-  pOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkPunct('+i+','+(o.isCorrect?i:-1)+',this)">'+String.fromCharCode(65+i)+'. '+o.text+'</div>';});
+  const pCi=pOpts.findIndex(o=>o.isCorrect);
+  pOpts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkPunct('+i+','+pCi+',this)">'+String.fromCharCode(65+i)+'. '+o.text+'</div>';});
   html+='</div></div>';
   document.getElementById('chineseContent').innerHTML=html;
 }
@@ -2148,8 +2228,25 @@ function checkPunct(chosen,correct,el){
   if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
   const allOpts=document.querySelectorAll('#chineseContent .mul-opt');
   allOpts.forEach(o=>o.classList.add('disabled-after'));
-  if(chosen===correct){el.classList.add('correct');punctState.correct++;}
-  else{el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});}
+  const q=PUNCT_QS[punctState.idx];
+  if(chosen===correct){
+    el.classList.add('correct');punctState.correct++;
+    const cheers=['太棒了！🎉','答对了！⭐','真厉害！💪','非常好！👍','满分！💯','你真聪明！🧠'];
+    const cheer=cheers[Math.floor(Math.random()*cheers.length)];
+    const reward=document.createElement('div');
+    reward.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#00B894,#55EFC4);color:white;font-size:32px;font-weight:900;padding:24px 40px;border-radius:20px;z-index:9999;text-align:center;box-shadow:0 8px 32px rgba(0,184,148,0.4)';
+    reward.textContent=cheer;
+    document.body.appendChild(reward);
+    setTimeout(()=>reward.remove(),800);
+  }else{
+    el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});
+    let expText='<div style="margin-top:10px;font-size:15px;color:#555;background:#FFF9E6;padding:10px 14px;border-radius:10px;border-left:4px solid #F39C12">'+q.exp+'</div>';
+    const notice=document.createElement('div');
+    notice.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;max-width:500px;width:90%';
+    notice.innerHTML=expText;
+    document.body.appendChild(notice);
+    setTimeout(()=>notice.remove(),2000);
+  }
   setTimeout(()=>{punctState.idx++;renderPunctQ()},1200);
 }
 
