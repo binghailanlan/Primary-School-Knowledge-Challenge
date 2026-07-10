@@ -1406,69 +1406,217 @@ function checkReadingPractice(chosen,correct,el){
   setTimeout(()=>{readingPracticeState.qIdx++;renderReadingPracticeQ()},1200);
 }
 
-// ====== 生字学习模块 ======
 const CHAR_DATA=[
-// 一年级易错字
-{char:'田',pinyin:'tián',radical:'田',strokes:5,words:['田地','水田','田野'],similar:['由','甲'],tips:'四四方方一块田，十字路口分四块'},
+// === 一年级易错字（同形不同义） ===
+{char:'田',pinyin:'tián',radical:'田',strokes:5,words:['田地','水田','田野'],similar:['由','甲'],tips:'四四方方一块田'},
 {char:'由',pinyin:'yóu',radical:'田',strokes:5,words:['由于','自由','理由'],similar:['田','甲'],tips:'田字上面出头就是由'},
 {char:'甲',pinyin:'jiǎ',radical:'田',strokes:5,words:['甲虫','指甲','甲等'],similar:['田','由'],tips:'田字下面出头就是甲'},
-{char:'已',pinyin:'yǐ',radical:'己',strokes:3,words:['已经','早已','已知'],similar:['己','巳'],tips:'半封口——已经的已'},
-{char:'己',pinyin:'jǐ',radical:'己',strokes:3,words:['自己','知己','己见'],similar:['已','巳'],tips:'全开口——自己的己'},
+{char:'已',pinyin:'yǐ',radical:'己',strokes:3,words:['已经','早已'],similar:['己','巳'],tips:'半封口——已经的已'},
+{char:'己',pinyin:'jǐ',radical:'己',strokes:3,words:['自己','知己'],similar:['已','巳'],tips:'全开口——自己的己'},
 {char:'巳',pinyin:'sì',radical:'己',strokes:3,words:['巳时'],similar:['己','已'],tips:'全封口——巳时的巳'},
-{char:'大',pinyin:'dà',radical:'大',strokes:3,words:['大家','大人','大小'],similar:['太','犬'],tips:'一个人张开双臂就是大'},
-{char:'太',pinyin:'tài',radical:'大',strokes:4,words:['太阳','太高','太少'],similar:['大','犬'],tips:'大字下面加一点就是太'},
+{char:'大',pinyin:'dà',radical:'大',strokes:3,words:['大家','大人'],similar:['太','犬'],tips:'张开双臂就是大'},
+{char:'太',pinyin:'tài',radical:'大',strokes:4,words:['太阳','太多'],similar:['大','犬'],tips:'大字下面加一点就是太'},
 {char:'犬',pinyin:'quǎn',radical:'大',strokes:4,words:['小狗','犬牙'],similar:['大','太'],tips:'大字右上加一点就是犬'},
-{char:'人',pinyin:'rén',radical:'人',strokes:2,words:['人们','人生','人口'],similar:['入','八'],tips:'一撇一捺就是人'},
-{char:'入',pinyin:'rù',radical:'入',strokes:2,words:['进入','入口','入手'],similar:['人','八'],tips:'一撇短一捺长就是入'},
-{char:'八',pinyin:'bā',radical:'八',strokes:2,words:['八个','八方','八仙'],similar:['人','入'],tips:'两笔分开像八的形状'},
-{char:'白',pinyin:'bái',radical:'白',strokes:5,words:['白色','白云','白天'],similar:['自','目'],tips:'日字加一横就是白'},
-{char:'自',pinyin:'zì',radical:'目',strokes:6,words:['自己','自习','自从'],similar:['白','目'],tips:'目字上面加一撇就是自'},
-{char:'日',pinyin:'rì',radical:'日',strokes:4,words:['日子','日出','日记'],similar:['目'],tips:'太阳就是日，方方正正'},
-{char:'目',pinyin:'mù',radical:'目',strokes:5,words:['目光','题目','目标'],similar:['日','自'],tips:'里面两横就是目，像眼睛'},
-{char:'刀',pinyin:'dāo',radical:'刀',strokes:2,words:['刀子','菜刀','小刀'],similar:['力','办'],tips:'横折钩加撇就是刀'},
-{char:'力',pinyin:'lì',radical:'力',strokes:2,words:['力气','用力','力量'],similar:['刀','办'],tips:'刀字出头就是力'},
-{char:'午',pinyin:'wǔ',radical:'十',strokes:4,words:['中午','上午','午后'],similar:['牛'],tips:'一横一竖不露头就是午'},
-{char:'牛',pinyin:'niú',radical:'牛',strokes:4,words:['牛奶','水牛','牛肉'],similar:['午'],tips:'上面一横出头就是牛'},
-// 二年级难字
-{char:'碧',pinyin:'bì',radical:'石',strokes:14,words:['碧绿','碧玉','碧空'],similar:['壁'],tips:'王白石——碧绿的碧'},
-{char:'壁',pinyin:'bì',radical:'土',strokes:16,words:['墙壁','壁画','壁纸'],similar:['碧'],tips:'辟加土——墙壁的壁'},
-{char:'拔',pinyin:'bá',radical:'扌',strokes:8,words:['拔河','拔牙','拔草'],similar:['拨'],tips:'拔字右边有一点——拔河的拔'},
-{char:'拨',pinyin:'bō',radical:'扌',strokes:8,words:['拨打','拨号','拨弄'],similar:['拔'],tips:'拨字右边有两笔——拨打的拨'},
-{char:'蜂',pinyin:'fēng',radical:'虫',strokes:13,words:['蜜蜂','蜂巢','蜂蜜'],similar:['峰','锋'],tips:'虫字旁——蜜蜂的蜂'},
-{char:'峰',pinyin:'fēng',radical:'山',strokes:10,words:['山峰','高峰','峰值'],similar:['蜂','锋'],tips:'山字旁——山峰的峰'},
-{char:'锋',pinyin:'fēng',radical:'钅',strokes:12,words:['锋利','先锋','前锋'],similar:['蜂','峰'],tips:'金字旁——锋利的锋'},
-{char:'漂',pinyin:'piào',radical:'氵',strokes:15,words:['漂亮'],similar:['飘'],tips:'三点水——漂亮的漂'},
-{char:'飘',pinyin:'piāo',radical:'风',strokes:15,words:['飘落','飘扬','飘动'],similar:['漂'],tips:'风字旁——飘落的飘'},
-{char:'陪',pinyin:'péi',radical:'阝',strokes:10,words:['陪伴','陪同','陪衬'],similar:['赔','倍'],tips:'耳朵旁——陪伴的陪'},
-{char:'赔',pinyin:'péi',radical:'贝',strokes:12,words:['赔偿','赔钱','赔礼'],similar:['陪','倍'],tips:'贝字旁——赔钱的赔'},
-{char:'倍',pinyin:'bèi',radical:'亻',strokes:10,words:['倍数','加倍','倍加'],similar:['陪','赔'],tips:'单人旁——加倍的倍'},
-{char:'慌',pinyin:'huāng',radical:'忄',strokes:12,words:['慌张','惊慌','慌忙'],similar:['荒','谎'],tips:'竖心旁——慌张的慌'},
-{char:'荒',pinyin:'huāng',radical:'艹',strokes:12,words:['荒地','荒凉','开荒'],similar:['慌','谎'],tips:'草字头——荒地的荒'},
-{char:'谎',pinyin:'huǎng',radical:'讠',strokes:11,words:['说谎','谎言','谎话'],similar:['慌','荒'],tips:'言字旁——说谎的谎'},
-{char:'诚',pinyin:'chéng',radical:'讠',strokes:8,words:['诚实','真诚','诚信'],similar:['城'],tips:'言字旁——诚实的诚'},
-{char:'城',pinyin:'chéng',radical:'土',strokes:9,words:['城市','长城','城墙'],similar:['诚'],tips:'土字旁——城市的城'},
-{char:'操',pinyin:'cāo',radical:'扌',strokes:16,words:['做操','操场','操心'],similar:['澡','燥','躁'],tips:'提手旁——做操的操'},
-{char:'澡',pinyin:'zǎo',radical:'氵',strokes:16,words:['洗澡','澡堂'],similar:['操','燥','躁'],tips:'三点水——洗澡的澡'},
-// 多音字
-{char:'乐',pinyin:'lè',radical:'丿',strokes:5,words:['快乐','欢乐','乐趣'],similar:[''],tips:'lè快乐；yuè音乐——一读乐二读乐',multiPinyin:'yuè',multiWords:['音乐','乐器','乐曲']},
-{char:'长',pinyin:'cháng',radical:'长',strokes:4,words:['长短','长大','长度'],similar:[''],tips:'cháng长短；zhǎng成长——长短和长大',multiPinyin:'zhǎng',multiWords:['成长','长大','家长']},
-{char:'数',pinyin:'shù',radical:'攵',strokes:13,words:['数字','数学','少数'],similar:[''],tips:'shù数字；shǔ数数——两种读法意思不同',multiPinyin:'shǔ',multiWords:['数数','数不清','数一数']},
-{char:'还',pinyin:'hái',radical:'辶',strokes:7,words:['还有','还是','还好'],similar:[''],tips:'hái还有；huán还书——还有和还书',multiPinyin:'huán',multiWords:['还书','归还','还钱']},
-{char:'干',pinyin:'gàn',radical:'干',strokes:3,words:['干活','能干','干净'],similar:[''],tips:'gàn干活；gān干净——干活和干净',multiPinyin:'gān',multiWords:['干净','干燥','干枯']},
-{char:'重',pinyin:'zhòng',radical:'里',strokes:9,words:['重量','重大','体重'],similar:[''],tips:'zhòng重量；chóng重复——两种读法两种意思',multiPinyin:'chóng',multiWords:['重复','重新','重来']},
-{char:'行',pinyin:'xíng',radical:'彳',strokes:6,words:['行走','行动','不行'],similar:[''],tips:'xíng行走；háng银行——走路和银行',multiPinyin:'háng',multiWords:['银行','行业','同行']},
-{char:'地',pinyin:'dì',radical:'土',strokes:6,words:['土地','地方','地球'],similar:[''],tips:'dì土地；de慢慢地——名词和助词',multiPinyin:'de',multiWords:['慢慢地','轻轻地','快快地']},
-{char:'得',pinyin:'dé',radical:'彳',strokes:11,words:['得到','取得','得分'],similar:[''],tips:'dé得到；de跑得快——动词和助词',multiPinyin:'de',multiWords:['跑得快','写得好','飞得高']},
-{char:'觉',pinyin:'jué',radical:'见',strokes:9,words:['觉得','感觉','自觉'],similar:[''],tips:'jué觉得；jiào睡觉——感觉和睡觉',multiPinyin:'jiào',multiWords:['睡觉','午觉','一觉']},
-// 形近字组
-{char:'恨',pinyin:'hèn',radical:'忄',strokes:9,words:['仇恨','可恨','怨恨'],similar:['很','狠'],tips:'竖心旁——仇恨的恨'},
-{char:'很',pinyin:'hěn',radical:'彳',strokes:9,words:['很好','很多','很快'],similar:['恨','狠'],tips:'双人旁——很好的很'},
-{char:'狠',pinyin:'hěn',radical:'犭',strokes:9,words:['凶狠','狠心','狠毒'],similar:['恨','很'],tips:'反犬旁——凶狠的狠'},
-{char:'折',pinyin:'zhé',radical:'扌',strokes:7,words:['折纸','打折','折腾'],similar:['拆','析'],tips:'提手旁——折纸的折'},
-{char:'拆',pinyin:'chāi',radical:'扌',strokes:8,words:['拆开','拆除','拆迁'],similar:['折','析'],tips:'提手旁多一笔——拆开的拆'},
-{char:'析',pinyin:'xī',radical:'木',strokes:8,words:['分析','解析','剖析'],similar:['折','拆'],tips:'木字旁——分析的析'}
+{char:'人',pinyin:'rén',radical:'人',strokes:2,words:['人们','人生'],similar:['入','八'],tips:'一撇一捺就是人'},
+{char:'入',pinyin:'rù',radical:'入',strokes:2,words:['进入','入口'],similar:['人','八'],tips:'一撇短一捺长就是入'},
+{char:'八',pinyin:'bā',radical:'八',strokes:2,words:['八个','八方'],similar:['人','入'],tips:'两笔分开像八'},
+{char:'白',pinyin:'bái',radical:'白',strokes:5,words:['白色','白云'],similar:['自','目'],tips:'日字加一横就是白'},
+{char:'自',pinyin:'zì',radical:'目',strokes:6,words:['自己','自从'],similar:['白','目'],tips:'目字上面加一撇就是自'},
+{char:'日',pinyin:'rì',radical:'日',strokes:4,words:['日子','日出'],similar:['目'],tips:'太阳就是日'},
+{char:'目',pinyin:'mù',radical:'目',strokes:5,words:['目光','题目'],similar:['日','自'],tips:'里面两横就是目'},
+{char:'刀',pinyin:'dāo',radical:'刀',strokes:2,words:['刀子','菜刀'],similar:['力'],tips:'横折钩加撇就是刀'},
+{char:'力',pinyin:'lì',radical:'力',strokes:2,words:['力气','力量'],similar:['刀'],tips:'刀字出头就是力'},
+{char:'午',pinyin:'wǔ',radical:'十',strokes:4,words:['中午','上午'],similar:['牛'],tips:'一横一竖不露头就是午'},
+{char:'牛',pinyin:'niú',radical:'牛',strokes:4,words:['牛奶','水牛'],similar:['午'],tips:'上面一横出头就是牛'},
+{char:'干',pinyin:'gān',radical:'干',strokes:3,words:['干净','干燥'],similar:['千','于'],tips:'两横一竖就是干'},
+{char:'千',pinyin:'qiān',radical:'十',strokes:3,words:['千万','一千'],similar:['干','于'],tips:'干字上面加一撇就是千'},
+{char:'于',pinyin:'yú',radical:'二',strokes:3,words:['于是','对于'],similar:['干','千'],tips:'干字竖弯钩就是于'},
+{char:'王',pinyin:'wáng',radical:'王',strokes:4,words:['大王','国王'],similar:['玉','主'],tips:'三横一竖就是王'},
+{char:'玉',pinyin:'yù',radical:'玉',strokes:5,words:['玉石','宝玉'],similar:['王','主'],tips:'王字加一点就是玉'},
+{char:'主',pinyin:'zhǔ',radical:'亠',strokes:5,words:['主人','主要'],similar:['王','玉'],tips:'王字上面加一点就是主'},
+{char:'士',pinyin:'shì',radical:'士',strokes:3,words:['战士','士气'],similar:['土'],tips:'上横长下横短是士'},
+{char:'土',pinyin:'tǔ',radical:'土',strokes:3,words:['土地','泥土'],similar:['士'],tips:'上横短下横长是土'},
+
+// === 二年级易混淆字组 ===
+// 请/情/清/晴/睛 五兄弟
+{char:'请',pinyin:'qǐng',radical:'讠',strokes:10,words:['请客','请问','请求'],similar:['情','清','晴','睛'],tips:'言字旁——说话要用"请"'},
+{char:'情',pinyin:'qíng',radical:'忄',strokes:11,words:['心情','感情','事情'],similar:['请','清','晴','睛'],tips:'竖心旁——心里有"情"'},
+{char:'清',pinyin:'qīng',radical:'氵',strokes:11,words:['清水','清凉','清楚'],similar:['请','情','晴','睛'],tips:'三点水——水很"清"'},
+{char:'晴',pinyin:'qíng',radical:'日',strokes:12,words:['晴天','晴朗','放晴'],similar:['请','情','清','睛'],tips:'日字旁——出太阳是"晴"天'},
+{char:'睛',pinyin:'jīng',radical:'目',strokes:13,words:['眼睛','目不转睛'],similar:['请','情','清','晴'],tips:'目字旁——眼睛的"睛"'},
+// 做/作/坐/座
+{char:'做',pinyin:'zuò',radical:'亻',strokes:11,words:['做事','做梦','做人'],similar:['作','坐','座'],tips:'单人旁——人"做"事'},
+{char:'作',pinyin:'zuò',radical:'亻',strokes:7,words:['作业','工作','作文'],similar:['做','坐','座'],tips:'单人旁——"作"业的作'},
+{char:'坐',pinyin:'zuò',radical:'土',strokes:7,words:['坐下','坐车','请坐'],similar:['做','作','座'],tips:'两个小人坐土上'},
+{char:'座',pinyin:'zuò',radical:'广',strokes:10,words:['座位','让座','一座山'],similar:['做','作','坐'],tips:'广字头——"座"位的座'},
+// 在/再
+{char:'在',pinyin:'zài',radical:'土',strokes:6,words:['现在','在家','存在'],similar:['再'],tips:'表示位置或存在用"在"'},
+{char:'再',pinyin:'zài',radical:'冂',strokes:6,words:['再见','再次','再来'],similar:['在'],tips:'表示又一次用"再"'},
+// 他/她/它
+{char:'他',pinyin:'tā',radical:'亻',strokes:5,words:['他们','他人','其他'],similar:['她','它'],tips:'单人旁——男的"他"'},
+{char:'她',pinyin:'tā',radical:'女',strokes:6,words:['她们','她家'],similar:['他','它'],tips:'女字旁——女的"她"'},
+{char:'它',pinyin:'tā',radical:'宀',strokes:5,words:['它们','其它'],similar:['他','她'],tips:'宝盖头——动物的"它"'},
+// 的/地/得
+{char:'的',pinyin:'de',radical:'白',strokes:8,words:['我的','好的','红的'],similar:['地','得'],tips:'修饰名词用"的"'},
+{char:'地',pinyin:'dì',radical:'土',strokes:6,words:['土地','地方'],similar:['的','得'],tips:'名词用"地"；修饰动词也用"地"'},
+{char:'得',pinyin:'dé',radical:'彳',strokes:11,words:['得到','觉得'],similar:['的','地'],tips:'补充说明用"得"（跑得快）'},
+// 哪/那
+{char:'哪',pinyin:'nǎ',radical:'口',strokes:9,words:['哪里','哪个','哪边'],similar:['那'],tips:'口字旁——问"哪"里'},
+{char:'那',pinyin:'nà',radical:'阝',strokes:6,words:['那里','那个','那么'],similar:['哪'],tips:'没有口字旁——指"那"个'},
+// 到/道
+{char:'到',pinyin:'dào',radical:'刂',strokes:8,words:['迟到','到处','到达'],similar:['道'],tips:'立刀旁——"到"达的到'},
+{char:'道',pinyin:'dào',radical:'辶',strokes:12,words:['道路','知道','一道题'],similar:['到'],tips:'走之底——"道"路的道'},
+// 以/已
+{char:'以',pinyin:'yǐ',radical:'人',strokes:4,words:['以后','可以','以为'],similar:['已'],tips:'竖提加点——"以"后的以'},
+// 拔/拨
+{char:'拔',pinyin:'bá',radical:'扌',strokes:8,words:['拔河','拔牙','拔草'],similar:['拨'],tips:'右边有一点——"拔"河'},
+{char:'拨',pinyin:'bō',radical:'扌',strokes:8,words:['拨打','拨号','拨弄'],similar:['拔'],tips:'右边有两笔——"拨"打'},
+// 碧/壁
+{char:'碧',pinyin:'bì',radical:'石',strokes:14,words:['碧绿','碧玉','碧空'],similar:['壁'],tips:'王白石——"碧"绿的碧'},
+{char:'壁',pinyin:'bì',radical:'土',strokes:16,words:['墙壁','壁画','壁纸'],similar:['碧'],tips:'辟加土——"墙"壁的壁'},
+// 蜂/峰/锋
+{char:'蜂',pinyin:'fēng',radical:'虫',strokes:13,words:['蜜蜂','蜂巢'],similar:['峰','锋'],tips:'虫字旁——蜜"蜂"'},
+{char:'峰',pinyin:'fēng',radical:'山',strokes:10,words:['山峰','高峰'],similar:['蜂','锋'],tips:'山字旁——山"峰"'},
+{char:'锋',pinyin:'fēng',radical:'钅',strokes:12,words:['锋利','先锋'],similar:['蜂','峰'],tips:'金字旁——"锋"利'},
+// 漂/飘
+{char:'漂',pinyin:'piào',radical:'氵',strokes:15,words:['漂亮'],similar:['飘'],tips:'三点水——"漂"亮'},
+{char:'飘',pinyin:'piāo',radical:'风',strokes:15,words:['飘落','飘扬'],similar:['漂'],tips:'风字旁——"飘"落'},
+// 陪/赔/倍
+{char:'陪',pinyin:'péi',radical:'阝',strokes:10,words:['陪伴','陪同'],similar:['赔','倍'],tips:'耳朵旁——"陪"伴'},
+{char:'赔',pinyin:'péi',radical:'贝',strokes:12,words:['赔偿','赔钱'],similar:['陪','倍'],tips:'贝字旁——"赔"钱'},
+{char:'倍',pinyin:'bèi',radical:'亻',strokes:10,words:['倍数','加倍'],similar:['陪','赔'],tips:'单人旁——加"倍"'},
+// 慌/荒/谎
+{char:'慌',pinyin:'huāng',radical:'忄',strokes:12,words:['慌张','惊慌'],similar:['荒','谎'],tips:'竖心旁——心"慌"'},
+{char:'荒',pinyin:'huāng',radical:'艹',strokes:12,words:['荒地','荒凉'],similar:['慌','谎'],tips:'草字头——"荒"地'},
+{char:'谎',pinyin:'huǎng',radical:'讠',strokes:11,words:['说谎','谎言'],similar:['慌','荒'],tips:'言字旁——说"谎"'},
+// 操/澡/燥/躁
+{char:'操',pinyin:'cāo',radical:'扌',strokes:16,words:['做操','操场'],similar:['澡','燥','躁'],tips:'提手旁——做"操"'},
+{char:'澡',pinyin:'zǎo',radical:'氵',strokes:16,words:['洗澡','澡堂'],similar:['操','燥','躁'],tips:'三点水——洗"澡"'},
+{char:'燥',pinyin:'zào',radical:'火',strokes:17,words:['干燥','燥热'],similar:['操','澡','躁'],tips:'火字旁——干"燥"'},
+{char:'躁',pinyin:'zào',radical:'足',strokes:20,words:['急躁','暴躁'],similar:['操','澡','燥'],tips:'足字旁——急"躁"跺脚'},
+// 诚/城
+{char:'诚',pinyin:'chéng',radical:'讠',strokes:8,words:['诚实','真诚'],similar:['城'],tips:'言字旁——"诚"实'},
+{char:'城',pinyin:'chéng',radical:'土',strokes:9,words:['城市','长城'],similar:['诚'],tips:'土字旁——"城"市'},
+// 烧/浇/晓
+{char:'烧',pinyin:'shāo',radical:'火',strokes:10,words:['燃烧','发烧'],similar:['浇','晓'],tips:'火字旁——"烧"火'},
+{char:'浇',pinyin:'jiāo',radical:'氵',strokes:9,words:['浇水','浇花'],similar:['烧','晓'],tips:'三点水——"浇"水'},
+{char:'晓',pinyin:'xiǎo',radical:'日',strokes:10,words:['春晓','知道'],similar:['烧','浇'],tips:'日字旁——春"晓"'},
+// 披/被/坡
+{char:'披',pinyin:'pī',radical:'扌',strokes:8,words:['披风','披上'],similar:['被','坡'],tips:'提手旁——"披"衣服'},
+{char:'被',pinyin:'bèi',radical:'衤',strokes:10,words:['被子','被动'],similar:['披','坡'],tips:'衣字旁——"被"子'},
+{char:'坡',pinyin:'pō',radical:'土',strokes:8,words:['山坡','上坡'],similar:['披','被'],tips:'土字旁——山"坡"'},
+// 级/极/及
+{char:'级',pinyin:'jí',radical:'纟',strokes:6,words:['年级','高级'],similar:['极','及'],tips:'绞丝旁——年"级"'},
+{char:'极',pinyin:'jí',radical:'木',strokes:7,words:['极好','南极'],similar:['级','及'],tips:'木字旁——"极"好'},
+{char:'及',pinyin:'jí',radical:'丿',strokes:3,words:['及时','以及'],similar:['级','极'],tips:'没有偏旁——"及"时'},
+// 令/今/铃
+{char:'令',pinyin:'lìng',radical:'人',strokes:5,words:['命令','口令'],similar:['今','铃'],tips:'人字头下面有一点——"令"'},
+{char:'今',pinyin:'jīn',radical:'人',strokes:4,words:['今天','今日'],similar:['令','铃'],tips:'人字头没有点——"今"天'},
+{char:'铃',pinyin:'líng',radical:'钅',strokes:10,words:['铃声','门铃'],similar:['令','今'],tips:'金字旁——"铃"声'},
+// 带/戴
+{char:'带',pinyin:'dài',radical:'巾',strokes:9,words:['带路','皮带','带来'],similar:['戴'],tips:'巾字底——"带"路'},
+{char:'戴',pinyin:'dài',radical:'十',strokes:17,words:['穿戴','戴帽子'],similar:['带'],tips:'土字头加共——穿"戴"'},
+// 慕/幕/墓
+{char:'慕',pinyin:'mù',radical:'艹',strokes:15,words:['羡慕','仰慕'],similar:['幕','墓'],tips:'下面是心——"慕"用心'},
+{char:'幕',pinyin:'mù',radical:'巾',strokes:13,words:['开幕','屏幕'],similar:['慕','墓'],tips:'下面是巾——"幕"布用巾'},
+{char:'墓',pinyin:'mù',radical:'土',strokes:13,words:['墓地','坟墓'],similar:['慕','幕'],tips:'下面是土——"墓"用土'},
+// 遥/摇/谣
+{char:'遥',pinyin:'yáo',radical:'辶',strokes:13,words:['遥远','遥望'],similar:['摇','谣'],tips:'走之底——"遥"远路远'},
+{char:'摇',pinyin:'yáo',radical:'扌',strokes:13,words:['摇动','摇头'],similar:['遥','谣'],tips:'提手旁——用手"摇"'},
+{char:'谣',pinyin:'yáo',radical:'讠',strokes:12,words:['歌谣','谣言'],similar:['遥','摇'],tips:'言字旁——"谣"言用嘴说'},
+// 惜/借/错
+{char:'惜',pinyin:'xī',radical:'忄',strokes:11,words:['可惜','珍惜'],similar:['借','错'],tips:'竖心旁——心"惜"'},
+{char:'借',pinyin:'jiè',radical:'亻',strokes:10,words:['借口','借书'],similar:['惜','错'],tips:'单人旁——找人"借"'},
+{char:'错',pinyin:'cuò',radical:'钅',strokes:13,words:['错误','对错'],similar:['惜','借'],tips:'金字旁——"错"误'},
+// 惊/凉/谅
+{char:'惊',pinyin:'jīng',radical:'忄',strokes:11,words:['吃惊','惊喜'],similar:['凉','谅'],tips:'竖心旁——心"惊"'},
+{char:'凉',pinyin:'liáng',radical:'冫',strokes:10,words:['凉快','清凉'],similar:['惊','谅'],tips:'两点水——"凉"快'},
+{char:'谅',pinyin:'liàng',radical:'讠',strokes:10,words:['原谅','谅解'],similar:['惊','凉'],tips:'言字旁——"谅"解用嘴说'},
+
+// === 多音字（完整版） ===
+{char:'乐',pinyin:'lè',radical:'丿',strokes:5,words:['快乐','欢乐'],similar:[],tips:'lè快乐；yuè音乐',multiPinyin:'yuè',multiWords:['音乐','乐器']},
+{char:'长',pinyin:'cháng',radical:'长',strokes:4,words:['长短','很长'],similar:[],tips:'cháng长短；zhǎng成长',multiPinyin:'zhǎng',multiWords:['成长','长大']},
+{char:'数',pinyin:'shù',radical:'攵',strokes:13,words:['数字','数学'],similar:[],tips:'shù数字；shǔ数数',multiPinyin:'shǔ',multiWords:['数数','数一数']},
+{char:'还',pinyin:'hái',radical:'辶',strokes:7,words:['还有','还是'],similar:[],tips:'hái还有；huán还书',multiPinyin:'huán',multiWords:['还书','归还']},
+{char:'行',pinyin:'xíng',radical:'彳',strokes:6,words:['行走','行动'],similar:[],tips:'xíng行走；háng银行',multiPinyin:'háng',multiWords:['银行','行业']},
+{char:'得',pinyin:'dé',radical:'彳',strokes:11,words:['得到','取得'],similar:[],tips:'dé得到；de跑得快',multiPinyin:'de',multiWords:['跑得快','写得好']},
+{char:'觉',pinyin:'jué',radical:'见',strokes:9,words:['觉得','感觉'],similar:[],tips:'jué觉得；jiào睡觉',multiPinyin:'jiào',multiWords:['睡觉','午觉']},
+{char:'只',pinyin:'zhī',radical:'口',strokes:5,words:['一只鸟','船只'],similar:[],tips:'zhī一只；zhǐ只要',multiPinyin:'zhǐ',multiWords:['只有','只要','只是']},
+{char:'分',pinyin:'fēn',radical:'刀',strokes:4,words:['分开','分别'],similar:[],tips:'fēn分开；fèn水分',multiPinyin:'fèn',multiWords:['水分','过分','本分']},
+{char:'种',pinyin:'zhǒng',radical:'禾',strokes:9,words:['种子','种类'],similar:[],tips:'zhǒng种子；zhòng种地',multiPinyin:'zhòng',multiWords:['种花','种地','种树']},
+{char:'结',pinyin:'jié',radical:'纟',strokes:9,words:['结束','团结'],similar:[],tips:'jié结束；jiē开花结果',multiPinyin:'jiē',multiWords:['开花结果','结实']},
+{char:'了',pinyin:'le',radical:'乙',strokes:2,words:['好了','走了'],similar:[],tips:'le助词；liǎo了解',multiPinyin:'liǎo',multiWords:['了解','了不起']},
+{char:'着',pinyin:'zhe',radical:'目',strokes:11,words:['看着','走着'],similar:[],tips:'zhe看着；zháo着急',multiPinyin:'zháo',multiWords:['着急','着火','睡着']},
+{char:'没',pinyin:'méi',radical:'氵',strokes:7,words:['没有','没人'],similar:[],tips:'méi没有；mò淹没',multiPinyin:'mò',multiWords:['淹没','沉没']},
+{char:'倒',pinyin:'dào',radical:'亻',strokes:10,words:['倒水','倒车'],similar:[],tips:'dào倒水；dǎo摔倒',multiPinyin:'dǎo',multiWords:['摔倒','倒下','倒了']},
+{char:'会',pinyin:'huì',radical:'人',strokes:6,words:['开会','学会'],similar:[],tips:'huì开会；kuài会计',multiPinyin:'kuài',multiWords:['会计']},
+{char:'干',pinyin:'gàn',radical:'干',strokes:3,words:['干活','能干'],similar:[],tips:'gàn干活；gān干净',multiPinyin:'gān',multiWords:['干净','干燥']},
+{char:'重',pinyin:'zhòng',radical:'里',strokes:9,words:['重量','很重'],similar:[],tips:'zhòng重量；chóng重复',multiPinyin:'chóng',multiWords:['重复','重新']},
+{char:'地',pinyin:'dì',radical:'土',strokes:6,words:['土地','地方'],similar:[],tips:'dì土地；de慢慢地',multiPinyin:'de',multiWords:['慢慢地','轻轻地']},
+{char:'落',pinyin:'luò',radical:'艹',strokes:12,words:['落叶','落下'],similar:[],tips:'luò落下；là丢三落四',multiPinyin:'là',multiWords:['丢三落四']},
+
+// === 偏旁部首归类字 ===
+// 三点水——与水有关
+{char:'江',pinyin:'jiāng',radical:'氵',strokes:6,words:['长江','江水'],similar:['河','湖'],tips:'三点水——江河的江'},
+{char:'河',pinyin:'hé',radical:'氵',strokes:8,words:['小河','河水'],similar:['江','湖'],tips:'三点水——小河的河'},
+{char:'湖',pinyin:'hú',radical:'氵',strokes:12,words:['湖水','西湖'],similar:['江','河'],tips:'三点水——湖水的湖'},
+{char:'海',pinyin:'hǎi',radical:'氵',strokes:10,words:['大海','海水'],similar:['洗','浪'],tips:'三点水——大海的海'},
+{char:'洗',pinyin:'xǐ',radical:'氵',strokes:9,words:['洗澡','洗手'],similar:['海','浪'],tips:'三点水——洗东西'},
+{char:'浪',pinyin:'làng',radical:'氵',strokes:10,words:['波浪','浪花'],similar:['海','洗'],tips:'三点水——波浪'},
+// 提手旁——与手的动作有关
+{char:'打',pinyin:'dǎ',radical:'扌',strokes:5,words:['打人','打球'],similar:['拍','捉'],tips:'提手旁——用手打'},
+{char:'拍',pinyin:'pāi',radical:'扌',strokes:8,words:['拍手','拍照'],similar:['打','捉'],tips:'提手旁——拍手的拍'},
+{char:'捉',pinyin:'zhuō',radical:'扌',strokes:10,words:['捉虫','捉迷藏'],similar:['打','拍'],tips:'提手旁——捉虫子'},
+{char:'找',pinyin:'zhǎo',radical:'扌',strokes:7,words:['找到','寻找'],similar:['捉','拍'],tips:'提手旁——找东西'},
+{char:'拉',pinyin:'lā',radical:'扌',strokes:8,words:['拉手','拉车'],similar:['推','拍'],tips:'提手旁——用手拉'},
+{char:'推',pinyin:'tuī',radical:'扌',strokes:11,words:['推开','推车'],similar:['拉','拍'],tips:'提手旁——用手推'},
+// 足字旁——与脚的动作有关
+{char:'跑',pinyin:'pǎo',radical:'足',strokes:12,words:['跑步','逃跑'],similar:['跳','踢'],tips:'足字旁——用脚跑'},
+{char:'跳',pinyin:'tiào',radical:'足',strokes:13,words:['跳远','跳绳'],similar:['跑','踢'],tips:'足字旁——用脚跳'},
+{char:'踢',pinyin:'tī',radical:'足',strokes:15,words:['踢球','踢毽子'],similar:['跑','跳'],tips:'足字旁——用脚踢'},
+{char:'路',pinyin:'lù',radical:'足',strokes:13,words:['马路','道路'],similar:['跑','跳'],tips:'足字旁——走路的路'},
+// 走之底——与行走有关
+{char:'过',pinyin:'guò',radical:'辶',strokes:6,words:['过去','经过'],similar:['进','远'],tips:'走之底——经过'},
+{char:'进',pinyin:'jìn',radical:'辶',strokes:7,words:['进入','进来'],similar:['过','远'],tips:'走之底——走进来'},
+{char:'远',pinyin:'yuǎn',radical:'辶',strokes:7,words:['远近','遥远'],similar:['过','近'],tips:'走之底——远近的远'},
+{char:'近',pinyin:'jìn',radical:'辶',strokes:7,words:['远近','很近'],similar:['远','过'],tips:'走之底——远近的近'},
+{char:'边',pinyin:'biān',radical:'辶',strokes:5,words:['旁边','左边'],similar:['过','进'],tips:'走之底——旁边'},
+// 宝盖头——与房屋有关
+{char:'家',pinyin:'jiā',radical:'宀',strokes:10,words:['家人','回家'],similar:['安','字'],tips:'宝盖头——家的家'},
+{char:'安',pinyin:'ān',radical:'宀',strokes:6,words:['安全','平安'],similar:['家','字'],tips:'宝盖头——平安'},
+{char:'字',pinyin:'zì',radical:'宀',strokes:6,words:['写字','生字'],similar:['家','安'],tips:'宝盖头——写字的字'},
+{char:'完',pinyin:'wán',radical:'宀',strokes:7,words:['完成','写完'],similar:['家','安'],tips:'宝盖头——完成'},
+// 草字头——与植物有关
+{char:'花',pinyin:'huā',radical:'艹',strokes:7,words:['花朵','开花'],similar:['草','芽'],tips:'草字头——花儿'},
+{char:'草',pinyin:'cǎo',radical:'艹',strokes:9,words:['小草','草地'],similar:['花','芽'],tips:'草字头——小草'},
+{char:'芽',pinyin:'yá',radical:'艹',strokes:7,words:['发芽','嫩芽'],similar:['花','草'],tips:'草字头——发芽'},
+{char:'菜',pinyin:'cài',radical:'艹',strokes:11,words:['白菜','蔬菜'],similar:['花','草'],tips:'草字头——蔬菜'},
+{char:'落',pinyin:'luò',radical:'艹',strokes:12,words:['落叶','落下'],similar:['花','草'],tips:'草字头——落叶'},
+// 竖心旁——与心理有关
+{char:'快',pinyin:'kuài',radical:'忄',strokes:7,words:['快乐','赶快'],similar:['慢','怕'],tips:'竖心旁——快乐'},
+{char:'慢',pinyin:'màn',radical:'忄',strokes:14,words:['快慢','慢慢'],similar:['快','怕'],tips:'竖心旁——慢'},
+{char:'怕',pinyin:'pà',radical:'忄',strokes:8,words:['害怕','不怕'],similar:['快','慢'],tips:'竖心旁——害怕'},
+{char:'忙',pinyin:'máng',radical:'忄',strokes:6,words:['帮忙','很忙'],similar:['快','怕'],tips:'竖心旁——很忙'},
+// 木字旁——与树木有关
+{char:'树',pinyin:'shù',radical:'木',strokes:9,words:['大树','树木'],similar:['林','桃'],tips:'木字旁——大树'},
+{char:'林',pinyin:'lín',radical:'木',strokes:8,words:['树林','森林'],similar:['树','桃'],tips:'木字旁——树林'},
+{char:'桃',pinyin:'táo',radical:'木',strokes:10,words:['桃花','桃子'],similar:['树','林'],tips:'木字旁——桃树'},
+{char:'桥',pinyin:'qiáo',radical:'木',strokes:10,words:['大桥','木桥'],similar:['树','林'],tips:'木字旁——木桥'},
+{char:'棵',pinyin:'kē',radical:'木',strokes:12,words:['一棵树','几棵'],similar:['树','林'],tips:'木字旁——一棵树'},
+// 竹字头——与竹子有关
+{char:'笔',pinyin:'bǐ',radical:'⺮',strokes:10,words:['毛笔','铅笔'],similar:['笑','篮'],tips:'竹字头——毛笔'},
+{char:'笑',pinyin:'xiào',radical:'⺮',strokes:10,words:['笑话','大笑'],similar:['笔','篮'],tips:'竹字头——笑'},
+{char:'篮',pinyin:'lán',radical:'⺮',strokes:16,words:['篮球','篮子'],similar:['笔','笑'],tips:'竹字头——篮球'},
+// 虫字旁——与虫子有关
+{char:'蝴',pinyin:'hú',radical:'虫',strokes:15,words:['蝴蝶'],similar:['蝶','蚂'],tips:'虫字旁——蝴蝶'},
+{char:'蝶',pinyin:'dié',radical:'虫',strokes:15,words:['蝴蝶'],similar:['蝴','蚂'],tips:'虫字旁——蝴蝶'},
+{char:'蚂',pinyin:'mǎ',radical:'虫',strokes:9,words:['蚂蚁','蚂蚱'],similar:['蝴','蚁'],tips:'虫字旁——蚂蚁'},
+{char:'蚁',pinyin:'yǐ',radical:'虫',strokes:9,words:['蚂蚁'],similar:['蚂','蝴'],tips:'虫字旁——蚂蚁'},
+{char:'蜘',pinyin:'zhī',radical:'虫',strokes:14,words:['蜘蛛'],similar:['蛛','蚂'],tips:'虫字旁——蜘蛛'},
+{char:'蛛',pinyin:'zhū',radical:'虫',strokes:12,words:['蜘蛛'],similar:['蜘','蚂'],tips:'虫字旁——蜘蛛'}
 ];
 
+// 替换原有 WORD_PAIRS
 const WORD_PAIRS=[
 {word:'碧绿',blank:'碧___',missing:'碧',opts:['碧','壁','辟','劈'],ans:0},
 {word:'拔河',blank:'___河',missing:'拔',opts:['拔','拨','泼','披'],ans:0},
@@ -1479,88 +1627,213 @@ const WORD_PAIRS=[
 {word:'诚实',blank:'___实',missing:'诚',opts:['诚','城','成','程'],ans:0},
 {word:'洗澡',blank:'___澡',missing:'洗',opts:['洗','操','燥','躁'],ans:0},
 {word:'已经',blank:'___经',missing:'已',opts:['已','己','巳','巴'],ans:0},
-{word:'自己',blank:'___己',missing:'自',opts:['自','目','白','日'],ans:0},
-{word:'晴朗',blank:'___朗',missing:'晴',opts:['晴','请','情','清'],ans:0},
+{word:'眼睛',blank:'___睛',missing:'眼',opts:['眼','晴','情','请'],ans:0},
+{word:'请客',blank:'___客',missing:'请',opts:['请','情','清','晴'],ans:0},
+{word:'心情',blank:'___情',missing:'心',opts:['心','新','辛','信'],ans:0},
+{word:'清水',blank:'___水',missing:'清',opts:['清','情','请','晴'],ans:0},
+{word:'晴天',blank:'___天',missing:'晴',opts:['晴','情','清','睛'],ans:0},
+{word:'做作业',blank:'___作业',missing:'做',opts:['做','作','坐','座'],ans:0},
+{word:'坐下',blank:'___下',missing:'坐',opts:['坐','座','做','作'],ans:0},
+{word:'座位',blank:'___位',missing:'座',opts:['座','坐','做','作'],ans:0},
+{word:'再见',blank:'___见',missing:'再',opts:['再','在','有','又'],ans:0},
+{word:'现在',blank:'___在',missing:'现',opts:['现','见','件','间'],ans:0},
+{word:'他们',blank:'___们',missing:'他',opts:['他','她','它','地'],ans:0},
+{word:'她们',blank:'___们',missing:'她',opts:['她','他','它','她'],ans:0},
+{word:'快乐',blank:'___乐',missing:'快',opts:['快','块','筷','决'],ans:0},
+{word:'哪里',blank:'___里',missing:'哪',opts:['哪','那','拿','那'],ans:0},
+{word:'那里',blank:'___里',missing:'那',opts:['那','哪','拿','南'],ans:0},
+{word:'迟到',blank:'___到',missing:'迟',opts:['迟','到','道','边'],ans:0},
+{word:'道路',blank:'___路',missing:'道',opts:['道','到','导','盗'],ans:0},
+{word:'以后',blank:'___后',missing:'以',opts:['以','已','衣','一'],ans:0},
+{word:'以为',blank:'___为',missing:'以',opts:['以','已','衣','一'],ans:0},
 {word:'飘落',blank:'___落',missing:'飘',opts:['飘','漂','票','膘'],ans:0},
+{word:'漂亮',blank:'___亮',missing:'漂',opts:['漂','飘','票','瞟'],ans:0},
 {word:'温暖',blank:'___暖',missing:'温',opts:['温','湿','漫','慢'],ans:0},
 {word:'操场',blank:'___场',missing:'操',opts:['操','澡','燥','躁'],ans:0},
 {word:'城市',blank:'___市',missing:'城',opts:['城','诚','成','程'],ans:0},
-{word:'传说',blank:'___说',missing:'传',opts:['传','转','专','砖'],ans:0},
-{word:'快乐',blank:'___乐',missing:'快',opts:['快','块','筷','决'],ans:0},
-{word:'美丽',blank:'___丽',missing:'美',opts:['美','每','妹','梅'],ans:0},
+{word:'烧水',blank:'___水',missing:'烧',opts:['烧','浇','晓','绕'],ans:0},
+{word:'浇水',blank:'___水',missing:'浇',opts:['浇','烧','晓','绕'],ans:0},
+{word:'披风',blank:'___风',missing:'披',opts:['披','被','坡','波'],ans:0},
+{word:'被子',blank:'___子',missing:'被',opts:['被','披','坡','波'],ans:0},
+{word:'山坡',blank:'___坡',missing:'山',opts:['山','披','被','波'],ans:0},
+{word:'年级',blank:'___级',missing:'年',opts:['年','级','极','及'],ans:0},
+{word:'命令',blank:'___令',missing:'命',opts:['命','今','令','铃'],ans:0},
+{word:'今天',blank:'___天',missing:'今',opts:['今','令','铃','领'],ans:0},
+{word:'羡慕',blank:'___慕',missing:'羡',opts:['羡','幕','墓','募'],ans:0},
+{word:'屏幕',blank:'___幕',missing:'屏',opts:['屏','幕','慕','墓'],ans:0},
+{word:'遥远',blank:'___远',missing:'遥',opts:['遥','摇','谣','姚'],ans:0},
+{word:'摇头',blank:'___头',missing:'摇',opts:['摇','遥','谣','姚'],ans:0},
+{word:'珍惜',blank:'___惜',missing:'珍',opts:['珍','惜','借','错'],ans:0},
+{word:'借书',blank:'___书',missing:'借',opts:['借','惜','错','猎'],ans:0},
+{word:'吃惊',blank:'___惊',missing:'吃',opts:['吃','惊','凉','谅'],ans:0},
+{word:'凉快',blank:'___快',missing:'凉',opts:['凉','惊','谅','京'],ans:0},
+{word:'原谅',blank:'___谅',missing:'原',opts:['原','谅','凉','惊'],ans:0},
+{word:'落叶',blank:'___叶',missing:'落',opts:['落','花','草','芽'],ans:0},
 {word:'花朵',blank:'___朵',missing:'花',opts:['花','化','画','话'],ans:0},
-{word:'春风',blank:'___风',missing:'春',opts:['春','看','奏','泰'],ans:0},
-{word:'树林',blank:'___林',missing:'树',opts:['树','对','村','时'],ans:0},
+{word:'大海',blank:'___海',missing:'大',opts:['大','太','天','犬'],ans:0},
+{word:'跑步',blank:'___步',missing:'跑',opts:['跑','跳','踢','路'],ans:0},
+{word:'跳绳',blank:'___绳',missing:'跳',opts:['跳','跑','踢','路'],ans:0},
+{word:'踢球',blank:'___球',missing:'踢',opts:['踢','跑','跳','路'],ans:0},
 {word:'写字',blank:'___字',missing:'写',opts:['写','与','宇','宁'],ans:0},
-{word:'河水',blank:'___水',missing:'河',opts:['河','何','荷','合'],ans:0},
-{word:'老师',blank:'___师',missing:'老',opts:['老','考','姥','佬'],ans:0},
-{word:'同学',blank:'___学',missing:'同',opts:['同','周','铜','筒'],ans:0},
-{word:'认真',blank:'___真',missing:'认',opts:['认','让','人','仁'],ans:0},
-{word:'高兴',blank:'___兴',missing:'高',opts:['高','搞','稿','镐'],ans:0},
-{word:'漂亮',blank:'___亮',missing:'漂',opts:['漂','飘','票','瞟'],ans:0},
-{word:'着急',blank:'___急',missing:'着',opts:['着','看','差','美'],ans:0},
-{word:'努力',blank:'___力',missing:'努',opts:['努','怒','奴','驾'],ans:0}
+{word:'篮球',blank:'___球',missing:'篮',opts:['篮','蓝','兰','监'],ans:0},
+{word:'蓝天',blank:'___天',missing:'蓝',opts:['蓝','篮','兰','监'],ans:0}
 ];
 
+// ====== 多音字练习 ======
+const DUOYINZI_QS=[
+{q:'下面"乐"读yuè的是？',opts:['快乐','音乐','欢乐','乐趣'],ans:1,exp:'音乐的乐读yuè，快乐的乐读lè。'},
+{q:'"他长大了"中"长"读什么？',opts:['cháng','zhǎng','cháng','cháng'],ans:1,exp:'成长的长读zhǎng，长短的长读cháng。'},
+{q:'"数不清的星星"中"数"读什么？',opts:['shù','shǔ','shù','shù'],ans:1,exp:'数数的数读shǔ，数字的数读shù。'},
+{q:'"我还有一本书"中"还"读什么？',opts:['hái','huán','hái','hái'],ans:0,exp:'还有的还读hái，还书的还读huán。'},
+{q:'"银行"中"行"读什么？',opts:['xíng','háng','xíng','xíng'],ans:1,exp:'银行的行读háng，行走的行读xíng。'},
+{q:'"跑得快"中"得"读什么？',opts:['dé','de','dé','dé'],ans:1,exp:'补语得读de，得到的得读dé。'},
+{q:'"睡觉"中"觉"读什么？',opts:['jué','jiào','jué','jué'],ans:1,exp:'睡觉的觉读jiào，感觉的觉读jué。'},
+{q:'"一只鸟"中"只"读什么？',opts:['zhī','zhǐ','zhī','zhī'],ans:0,exp:'一只的只读zhī，只要的只读zhǐ。'},
+{q:'"分开"中"分"读什么？',opts:['fēn','fèn','fēn','fēn'],ans:0,exp:'分开的分读fēn，水分的分读fèn。'},
+{q:'"种花"中"种"读什么？',opts:['zhǒng','zhòng','zhǒng','zhǒng'],ans:1,exp:'种花的种读zhòng，种子的种读zhǒng。'},
+{q:'"结束"中"结"读什么？',opts:['jié','jiē','jié','jié'],ans:0,exp:'结束的结读jié，结果的结读jiē。'},
+{q:'"了解"中"了"读什么？',opts:['le','liǎo','le','le'],ans:1,exp:'了解的了读liǎo，走了的了读le。'},
+{q:'"着急"中"着"读什么？',opts:['zhe','zháo','zhe','zhe'],ans:1,exp:'着急的着读zháo，看着的着读zhe。'},
+{q:'"淹没"中"没"读什么？',opts:['méi','mò','méi','méi'],ans:1,exp:'淹没的没读mò，没有的没读méi。'},
+{q:'"倒水"中"倒"读什么？',opts:['dào','dǎo','dào','dào'],ans:0,exp:'倒水的倒读dào，摔倒的倒读dǎo。'},
+{q:'"会计"中"会"读什么？',opts:['huì','kuài','huì','huì'],ans:1,exp:'会计的会读kuài，开会的会读huì。'},
+{q:'"干净"中"干"读什么？',opts:['gàn','gān','gàn','gàn'],ans:1,exp:'干净的干读gān，干活的干读gàn。'},
+{q:'"重复"中"重"读什么？',opts:['zhòng','chóng','zhòng','zhòng'],ans:1,exp:'重复的重读chóng，重量的重读zhòng。'},
+{q:'"慢慢地走"中"地"读什么？',opts:['dì','de','dì','dì'],ans:1,exp:'助词地读de，土地的地读dì。'},
+{q:'"丢三落四"中"落"读什么？',opts:['luò','là','luò','luò'],ans:1,exp:'丢三落四的落读là，落叶的落读luò。'}
+];
+
+// ====== 偏旁部首练习 ======
+const RADICAL_QS=[
+{q:'"江"的偏旁部首是什么？',opts:['三点水','提手旁','木字旁','火字旁'],ans:0,exp:'江是三点水，跟水有关。'},
+{q:'"跑"的偏旁部首是什么？',opts:['走之底','足字旁','提手旁','口字旁'],ans:1,exp:'跑是足字旁，跟脚的动作有关。'},
+{q:'"花"的偏旁部首是什么？',opts:['草字头','木字旁','竹字头','三点水'],ans:0,exp:'花是草字头，跟植物有关。'},
+{q:'"快"的偏旁部首是什么？',opts:['竖心旁','十字旁','日字旁','月字旁'],ans:0,exp:'快是竖心旁，跟心理有关。'},
+{q:'"树"的偏旁部首是什么？',opts:['草字头','木字旁','竹字头','禾字旁'],ans:1,exp:'树是木字旁，跟树木有关。'},
+{q:'"蝴蝶"的偏旁部首是什么？',opts:['虫字旁','草字头','三点水','走之底'],ans:0,exp:'蝴蝶都是虫字旁，跟虫子有关。'},
+{q:'"家"的偏旁部首是什么？',opts:['宝盖头','秃宝盖','穴宝盖','雨字头'],ans:0,exp:'家是宝盖头，跟房屋有关。'},
+{q:'"笔"的偏旁部首是什么？',opts:['草字头','木字旁','竹字头','毛字旁'],ans:2,exp:'笔是竹字头，古代笔用竹子做。'},
+{q:'"打"的偏旁部首是什么？',opts:['足字旁','提手旁','走之底','口字旁'],ans:1,exp:'打是提手旁，跟手的动作有关。'},
+{q:'"过"的偏旁部首是什么？',opts:['提手旁','足字旁','走之底','三点水'],ans:2,exp:'过是走之底，跟行走有关。'},
+{q:'"请"的偏旁部首是什么？',opts:['言字旁','竖心旁','三点水','提手旁'],ans:0,exp:'请是言字旁，跟说话有关。'},
+{q:'"惊"的偏旁部首是什么？',opts:['言字旁','竖心旁','三点水','提手旁'],ans:1,exp:'惊是竖心旁，跟心理有关。'},
+{q:'"洗"的偏旁部首是什么？',opts:['三点水','提手旁','足字旁','言字旁'],ans:0,exp:'洗是三点水，跟水有关。'},
+{q:'"路"的偏旁部首是什么？',opts:['走之底','足字旁','提手旁','口字旁'],ans:1,exp:'路是足字旁，跟走路有关。'},
+{q:'"笑"的偏旁部首是什么？',opts:['草字头','木字旁','竹字头','山字头'],ans:2,exp:'笑是竹字头。'},
+{q:'"蛛"的偏旁部首是什么？',opts:['虫字旁','虫字底','走之底','反犬旁'],ans:0,exp:'蛛是虫字旁，蜘蛛是虫子。'},
+{q:'"被"的偏旁部首是什么？',opts:['衣字旁','示字旁','提手旁','三点水'],ans:0,exp:'被是衣字旁（衤），跟衣服有关。'},
+{q:'"城"的偏旁部首是什么？',opts:['土字旁','提手旁','言字旁','金字旁'],ans:0,exp:'城是土字旁，城墙用土建造。'},
+{q:'哪个字是"竹字头"？',opts:['篮','花','跑','请'],ans:0,exp:'篮是竹字头，古代篮子用竹子编。'},
+{q:'哪个字是"走之底"？',opts:['边','拍','跳','吃'],ans:0,exp:'边是走之底，跟行走有关。'}
+];
+
+// ====== 形近字辨析练习 ======
+const XINGJIN_QS=[
+{q:'"请"和"情"有什么不同？',opts:['请是言字旁，情是竖心旁','请是竖心旁，情是言字旁','都是一样的','请是三点水'],ans:0,exp:'请（说话用请）是言字旁，情（心情）是竖心旁。'},
+{q:'哪个是"已经"的"已"？',opts:['已','己','巳','巴'],ans:0,exp:'已半封口——已经的已。己全开口，巳全封口。'},
+{q:'"他"和"她"有什么不同？',opts:['他单人旁是男的，她女字旁是女的','一样的','她单人旁','他女字旁'],ans:0,exp:'他单人旁指男性，她女字旁指女性。'},
+{q:'"在"和"再"有什么不同？',opts:['在表示位置，再表示又一次','在表示又一次，再表示位置','一样的','都是位置'],ans:0,exp:'在家（位置）；再见（又一次）。'},
+{q:'"那"和"哪"有什么不同？',opts:['哪有口字旁是问话，那没有口是指','那有口，哪没有口','一样的','都是问话'],ans:0,exp:'哪（哪里）有口字旁是提问；那（那个）没有口是指示。'},
+{q:'"做"和"作"有什么不同？',opts:['做是做事，作是作文工作','做是作文，作是做事','一样的','都一样'],ans:0,exp:'做事用做，作业作文用作。'},
+{q:'"坐"和"座"有什么不同？',opts:['坐是动词坐下，座是名词座位','坐是座位，座是坐下','一样的','都一样'],ans:0,exp:'坐下（动词）用坐；座位（名词）用座。'},
+{q:'"拔"和"拨"有什么不同？',opts:['拔右边有一点，拨右边有两笔','一样的','拨右边有一点','都是提手旁一样的'],ans:0,exp:'拔河的拔右边一点；拨打的拨右边两笔。'},
+{q:'"碧"和"壁"有什么不同？',opts:['碧下面是石，壁下面是土','碧下面是土，壁下面是石','一样的','碧有王壁没有'],ans:0,exp:'碧绿的碧下面是石；墙壁的壁下面是土。'},
+{q:'"飘"和"漂"有什么不同？',opts:['飘是风字旁，漂是三点水','飘是三点水，漂是风字旁','一样的','都是三点水'],ans:0,exp:'飘落（风字旁）；漂亮（三点水）。'},
+{q:'哪个是"蜜"？',opts:['蜜蜂的蜜','秘密的密','一样的','都不是'],ans:0,exp:'蜜蜂的蜜下面是虫；秘密的密下面是山。'},
+{q:'"陪"和"赔"有什么不同？',opts:['陪是耳朵旁陪伴，赔是贝字旁赔钱','一样的','赔是耳朵旁','都贝字旁'],ans:0,exp:'陪伴用陪（阝）；赔钱用赔（贝）。'},
+{q:'"以"和"已"有什么不同？',opts:['以是以后的以，已是已经的已','一样的','已没有封口','已全开口'],ans:0,exp:'以后（以竖提加点）；已经（已半封口）。'},
+{q:'哪个是"慌"？',opts:['竖心旁惊慌','草字头荒地','言字旁说谎','一样的'],ans:0,exp:'慌是竖心旁（心里慌）；荒是草字头（荒地）；谎是言字旁（说谎）。'},
+{q:'"级"和"极"有什么不同？',opts:['级是绞丝旁年级，极是木字旁极好','一样的','极是绞丝旁','级是木字旁'],ans:0,exp:'年级用级（纟）；极好用极（木）。'},
+{q:'"今"和"令"有什么不同？',opts:['今没有点是今天，令有点是命令','今有点，令没有点','一样的','都有点'],ans:0,exp:'今天（今没有点）；命令（令有一点）。'},
+{q:'"戴"和"带"有什么不同？',opts:['戴是穿戴戴帽子，带是带路皮带','戴是带路，带是穿戴','一样的','都一样'],ans:0,exp:'穿戴用戴（土字头）；带路用带（巾字底）。'},
+{q:'"慕"和"幕"有什么不同？',opts:['慕下面是心羡慕，幕下面是巾开幕','一样的','慕是巾','都心字底'],ans:0,exp:'羡慕（慕下面是心）；开幕（幕下面是巾）。'},
+{q:'"遥"和"摇"有什么不同？',opts:['遥是走之底遥远，摇是提手旁摇头','一样的','摇是走之底','都是走之底'],ans:0,exp:'遥远（走之底）；摇头（提手旁）。'},
+{q:'"烧"和"浇"有什么不同？',opts:['烧是火字旁烧火，浇是三点水浇水','一样的','浇是火字旁','都是三点水'],ans:0,exp:'烧火（火字旁）；浇水（三点水）。'}
+];
+
+// ====== 生字学习游戏函数 ======
 let charGameState={mode:'',questions:[],idx:0,correct:0};
 function showCharHome(){
-  let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#F39C12,#FDCB6E)">🔤 生字学习</span></div><h2>🔤 一年级二年级生字学习</h2></div>';
-  html+='<div class="mul-q-card" style="margin-bottom:16px;display:flex;gap:12px">';
-  html+='<div style="flex:1;background:#E8F5E9;border-radius:14px;padding:18px;text-align:center;cursor:pointer;border:2px solid #C8E6C9" onclick="startWordGame()"><div style="font-size:32px;margin-bottom:8px">📝</div><div style="font-size:18px;font-weight:700">组词游戏</div><div style="font-size:14px;color:#888">看字选词 15题</div></div>';
-  html+='<div style="flex:1;background:#FFF3E0;border-radius:14px;padding:18px;text-align:center;cursor:pointer;border:2px solid #FFE0B2" onclick="startRecogGame()"><div style="font-size:32px;margin-bottom:8px">🔍</div><div style="font-size:18px;font-weight:700">认字游戏</div><div style="font-size:14px;color:#888">填字辨析 15题</div></div>';
+  let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#F39C12,#FDCB6E)">🔤 生字学习</span></div><h2>🔤 生字学习</h2></div>';
+  // 5个游戏入口
+  html+='<div class="mul-q-card" style="margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+  html+='<div style="background:#E8F5E9;border-radius:14px;padding:16px;text-align:center;cursor:pointer;border:2px solid #C8E6C9" onclick="startWordGame()"><div style="font-size:28px">📝</div><div style="font-size:16px;font-weight:700">组词游戏</div></div>';
+  html+='<div style="background:#FFF3E0;border-radius:14px;padding:16px;text-align:center;cursor:pointer;border:2px solid #FFE0B2" onclick="startRecogGame()"><div style="font-size:28px">🔍</div><div style="font-size:16px;font-weight:700">认字游戏</div></div>';
+  html+='<div style="background:#FCE4EC;border-radius:14px;padding:16px;text-align:center;cursor:pointer;border:2px solid #F8BBD0" onclick="startDuoYinziGame()"><div style="font-size:28px">🎵</div><div style="font-size:16px;font-weight:700">多音字</div></div>';
+  html+='<div style="background:#E8EAF6;border-radius:14px;padding:16px;text-align:center;cursor:pointer;border:2px solid #C5CAE9" onclick="startRadicalGame()"><div style="font-size:28px">🧩</div><div style="font-size:16px;font-weight:700">偏旁部首</div></div>';
+  html+='<div style="grid-column:1/-1;background:#F3E5F5;border-radius:14px;padding:16px;text-align:center;cursor:pointer;border:2px solid #E1BEE7" onclick="startXingJinGame()"><div style="font-size:28px">👁️</div><div style="font-size:16px;font-weight:700">形近字辨析（20题）</div></div>';
   html+='</div>';
   // 分类展示生字
-  const cats=[{name:'⚠️ 一年级易错字',start:0,end:20},{name:'📚 二年级难字',start:20,end:40},{name:'🎵 多音字',start:40,end:50},{name:'👁️ 形近字',start:50}];
+  const cats=[{name:'⚠️ 一年级易错字',start:0,end:25},{name:'🔍 请情清晴睛组',start:25,end:30},{name:'🚶 做作坐座组',start:30,end:34},{name:'👀 在再/他她它/的地得',start:34,end:43},{name:'🎭 二年级易混淆字',start:43,end:88},{name:'🎵 多音字',start:88,end:108},{name:'🧩 偏旁部首',start:108}];
   cats.forEach(cat=>{
-    const chars=cat.start===50?CHAR_DATA.slice(cat.start):CHAR_DATA.slice(cat.start,cat.end);
-    html+='<div class="mul-q-card" style="text-align:left;margin-bottom:12px"><div style="font-size:18px;font-weight:700;margin-bottom:10px">'+cat.name+'</div><div style="display:flex;flex-wrap:wrap;gap:8px">';
+    const chars=cat.start===108?CHAR_DATA.slice(cat.start):CHAR_DATA.slice(cat.start,Math.min(cat.end,CHAR_DATA.length));
+    html+='<div class="mul-q-card" style="text-align:left;margin-bottom:12px"><div style="font-size:18px;font-weight:700;margin-bottom:10px">'+cat.name+' ('+chars.length+'字)</div><div style="display:flex;flex-wrap:wrap;gap:6px">';
     chars.forEach(c=>{
-      html+='<div style="background:#F8F9FF;border:1px solid #E8E8F0;border-radius:10px;padding:8px 12px;text-align:center;min-width:50px"><div style="font-size:22px;font-weight:700">'+c.char+'</div><div style="font-size:12px;color:#888">'+c.pinyin+'</div></div>';
+      html+='<div style="background:#F8F9FF;border:1px solid #E8E8F0;border-radius:8px;padding:6px 10px;text-align:center;min-width:44px"><div style="font-size:20px;font-weight:700">'+c.char+'</div><div style="font-size:11px;color:#888">'+c.pinyin+'</div></div>';
     });
     html+='</div></div>';
   });
   document.getElementById('chineseContent').innerHTML=html;
   showScreen('chineseHome');
 }
-
 function startWordGame(){
-  const shuffled=[...CHAR_DATA].sort(()=>Math.random()-0.5).slice(0,15);
+  const shuffled=[...CHAR_DATA].filter(c=>c.words&&c.words.length>0).sort(()=>Math.random()-0.5).slice(0,15);
   charGameState={mode:'word',questions:shuffled,idx:0,correct:0};
-  renderCharQ();
-  showScreen('chineseHome');
+  renderCharQ();showScreen('chineseHome');
 }
 function startRecogGame(){
   const shuffled=[...WORD_PAIRS].sort(()=>Math.random()-0.5).slice(0,15);
   charGameState={mode:'recog',questions:shuffled,idx:0,correct:0};
-  renderCharQ();
-  showScreen('chineseHome');
+  renderCharQ();showScreen('chineseHome');
+}
+function startDuoYinziGame(){
+  const shuffled=[...DUOYINZI_QS].sort(()=>Math.random()-0.5);
+  charGameState={mode:'duoyinzi',questions:shuffled,idx:0,correct:0};
+  renderCharQ();showScreen('chineseHome');
+}
+function startRadicalGame(){
+  const shuffled=[...RADICAL_QS].sort(()=>Math.random()-0.5);
+  charGameState={mode:'radical',questions:shuffled,idx:0,correct:0};
+  renderCharQ();showScreen('chineseHome');
+}
+function startXingJinGame(){
+  const shuffled=[...XINGJIN_QS].sort(()=>Math.random()-0.5);
+  charGameState={mode:'xingjin',questions:shuffled,idx:0,correct:0};
+  renderCharQ();showScreen('chineseHome');
 }
 function renderCharQ(){
   const s=charGameState;
   if(s.idx>=s.questions.length){
     const t=s.questions.length;const pct=Math.round(s.correct/t*100);
-    document.getElementById('chineseContent').innerHTML='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#F39C12,#FDCB6E)">🔤 生字学习</span></div></div><div class="mul-q-card"><div style="font-size:50px;margin-bottom:12px">'+(pct>=80?'🎉':'💪')+'</div><div style="font-size:28px;font-weight:900">'+(s.mode==='word'?'组词':'认字')+'游戏完成！</div><div style="font-size:22px;color:#555;margin:8px 0 16px">答对 '+s.correct+'/'+t+'（'+pct+'%）</div><button class="next-btn" onclick="'+(s.mode==='word'?'startWordGame()':'startRecogGame()')+'">🔄 再来一轮</button><button class="next-btn" onclick="showCharHome()" style="background:transparent;color:#888;border:2px solid #ddd">🏠 返回</button></div>';
+    const names={word:'组词',recog:'认字',duoyinzi:'多音字',radical:'偏旁部首',xingjin:'形近字辨析'};
+    document.getElementById('chineseContent').innerHTML='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#F39C12,#FDCB6E)">🔤 '+names[s.mode]+'</span></div></div><div class="mul-q-card"><div style="font-size:50px;margin-bottom:12px">'+(pct>=80?'🎉':'💪')+'</div><div style="font-size:28px;font-weight:900">'+names[s.mode]+'完成！</div><div style="font-size:22px;color:#555;margin:8px 0 16px">答对 '+s.correct+'/'+t+'（'+pct+'%）</div><button class="next-btn" onclick="start'+{word:'Word',recog:'Recog',duoyinzi:'DuoYinzi',radical:'Radical',xingjin:'XingJin'}[s.mode]+'Game()">🔄 再来一轮</button><button class="next-btn" onclick="showCharHome()" style="background:transparent;color:#888;border:2px solid #ddd">🏠 返回</button></div>';
     return;
   }
+  const q=s.questions[s.idx];
   let html='<div class="mul-q-card" style="text-align:left">';
+  html+='<div style="font-size:16px;color:#888;margin-bottom:8px">第 '+(s.idx+1)+' / '+s.questions.length+' 题</div>';
   if(s.mode==='word'){
-    const c=s.questions[s.idx];
-    html+='<div style="font-size:16px;color:#888;margin-bottom:8px">第 '+(s.idx+1)+' / '+s.questions.length+' 题 · 组词游戏</div>';
-    html+='<div style="font-size:52px;font-weight:900;text-align:center;margin:20px 0;background:#FFF3E0;padding:20px;border-radius:16px">'+c.char+'<div style="font-size:16px;color:#888">'+c.pinyin+'</div></div>';
-    html+='<div style="font-size:18px;text-align:center;margin-bottom:12px">下面哪个词包含「'+c.char+'」？</div><div class="mul-opts">';
-    const correctWord=c.words[0];
-    let wrongPool=CHAR_DATA.filter(x=>x.char!==c.char).flatMap(x=>x.words);
+    html+='<div style="font-size:52px;font-weight:900;text-align:center;margin:20px 0;background:#FFF3E0;padding:20px;border-radius:16px">'+q.char+'<div style="font-size:16px;color:#888">'+q.pinyin+'</div></div>';
+    html+='<div style="font-size:18px;text-align:center;margin-bottom:12px">下面哪个词包含「'+q.char+'」？</div><div class="mul-opts">';
+    const correctWord=q.words[0];
+    let wrongPool=CHAR_DATA.filter(x=>x.char!==q.char&&x.words&&x.words.length>0).flatMap(x=>x.words);
     wrongPool.sort(()=>Math.random()-0.5);
     let opts=[correctWord,...wrongPool.slice(0,3)];
     opts.sort(()=>Math.random()-0.5);
-    const correctIdx=opts.indexOf(correctWord);
-    opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+correctIdx+',this)">'+o+'</div>';});
-  }else{
-    const wp=s.questions[s.idx];
-    html+='<div style="font-size:16px;color:#888;margin-bottom:8px">第 '+(s.idx+1)+' / '+s.questions.length+' 题 · 认字游戏</div>';
-    html+='<div style="font-size:36px;font-weight:900;text-align:center;margin:20px 0;background:#E8F5E9;padding:20px;border-radius:16px">'+wp.blank+'</div>';
+    opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+opts.indexOf(correctWord)+',this)">'+o+'</div>';});
+  }else if(s.mode==='recog'){
+    html+='<div style="font-size:36px;font-weight:900;text-align:center;margin:20px 0;background:#E8F5E9;padding:20px;border-radius:16px">'+q.blank+'</div>';
     html+='<div style="font-size:18px;text-align:center;margin-bottom:12px">横线上应该填哪个字？</div><div class="mul-opts">';
-    wp.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+wp.ans+',this)" style="font-size:32px">'+o+'</div>';});
+    q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+q.ans+',this)" style="font-size:32px">'+o+'</div>';});
+  }else if(s.mode==='duoyinzi'){
+    html+='<div style="font-size:22px;font-weight:700;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
+    q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+q.ans+',this)">'+o+'</div>';});
+  }else if(s.mode==='radical'){
+    html+='<div style="font-size:22px;font-weight:700;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
+    q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+q.ans+',this)">'+o+'</div>';});
+  }else if(s.mode==='xingjin'){
+    html+='<div style="font-size:20px;font-weight:700;margin-bottom:20px;line-height:1.8">'+q.q+'</div><div class="mul-opts">';
+    q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+q.ans+',this)">'+o+'</div>';});
   }
   html+='</div></div>';
   document.getElementById('chineseContent').innerHTML=html;
