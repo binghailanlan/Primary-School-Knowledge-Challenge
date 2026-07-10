@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>计算大闯关 - 20以内加减法</title>
+<title>小学二年级学习乐园</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -193,8 +193,11 @@ body{font-family:'Noto Sans SC',sans-serif;background:#C8E6C9;color:#2D3436;min-
 .mul-opts{display:flex;flex-direction:column;gap:14px}
 .mul-opt{display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:2px solid #F0F0F5;border-radius:16px;padding:18px 24px;font-size:26px;font-weight:700;color:#2D3436;cursor:pointer;transition:all .3s}
 .mul-opt:hover{border-color:#00B894;transform:translateY(-2px);box-shadow:0 4px 15px rgba(0,0,0,.08)}
-.mul-opt.correct{background:#D4EDDA;border-color:#28A745}
-.mul-opt.wrong{background:#F8D7DA;border-color:#DC3545}
+.mul-opt.correct{background:#D4EDDA;border-color:#28A745;color:#155724;transform:scale(1.03);box-shadow:0 0 0 3px rgba(40,167,69,.3)}
+.mul-opt.correct::after{content:' ✅';font-size:20px}
+.mul-opt.wrong{background:#F8D7DA;border-color:#DC3545;color:#721C24;transform:scale(1.03);box-shadow:0 0 0 3px rgba(220,53,69,.3)}
+.mul-opt.wrong::after{content:' ❌';font-size:20px}
+.mul-opt.disabled-after{pointer-events:none;opacity:.55}
 
 /* Mul Quiz */
 .mul-timer{font-size:20px;font-weight:700;color:#E17055;text-align:center;margin:8px 0}
@@ -209,6 +212,20 @@ body{font-family:'Noto Sans SC',sans-serif;background:#C8E6C9;color:#2D3436;min-
 .mul-result-card .stat .num{font-size:36px;font-weight:900;color:#6C5CE7}
 .mul-result-card .stat .label{font-size:16px;color:#888;margin-top:4px}
 .mul-result-card .btns{display:flex;flex-direction:column;gap:12px;margin-top:24px}
+
+/* ====== 语文模块 ====== */
+.chinese-nav{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 0 30px}
+.chinese-card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 6px 25px rgba(0,0,0,.08);cursor:pointer;transition:all .4s;border:2px solid #F0F0F5;text-align:center}
+.chinese-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.chinese-card .cc-icon{font-size:48px;margin-bottom:8px}
+.chinese-card .cc-title{font-size:22px;font-weight:800;color:#2D3436}
+.chinese-card .cc-desc{font-size:15px;color:#888;margin-top:4px}
+.poem-card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 6px 25px rgba(0,0,0,.08);margin-bottom:16px;border:2px solid #F0F0F5}
+.poem-title{font-size:26px;font-weight:900;color:#2D3436}
+.poem-author{font-size:16px;color:#888;margin:4px 0 12px}
+.poem-body{font-size:28px;font-weight:700;line-height:2;color:#2D3436;padding:16px;background:#F8F9FF;border-radius:12px;border-left:4px solid #6C5CE7}
+.fill-input{width:60px;border-bottom:3px solid #6C5CE7;background:transparent;text-align:center;font-size:26px;font-weight:700;margin:0 2px;font-family:'Noto Sans SC',sans-serif;outline:none}
+.fill-input:focus{border-color:#E17055}
 </style>
 </head>
 <body>
@@ -219,15 +236,17 @@ body{font-family:'Noto Sans SC',sans-serif;background:#C8E6C9;color:#2D3436;min-
 <!-- Home Screen -->
 <div class="screen active" id="home">
   <div class="welcome">
-    <div class="logo">🧮</div>
-    <h1>计算大闯关</h1>
-    <p class="sub">20以内加减法 · 99乘法表 · 快速口算</p>
-    <div class="btn-row">
-      <button class="learn-btn" onclick="showLearnMethods()">📖 学方法</button>
-      <button class="start-btn" onclick="showLevels()">🚀 开始闯关</button>
-    </div>
-    <div class="btn-row" style="margin-top:12px">
-      <button class="mul-btn" onclick="showMultiplication()">✖️ 九九乘法表</button>
+    <div class="logo">📚</div>
+    <h1>小学二年级学习乐园</h1>
+    <p class="sub">计算闯关 · 古诗背诵 · 课文学习 · 快速口算</p>
+    <div class="chinese-nav">
+      <div class="chinese-card" onclick="showLevels()"><div class="cc-icon">🧮</div><div class="cc-title">计算闯关</div><div class="cc-desc">20以内加减法</div></div>
+      <div class="chinese-card" onclick="showMultiplication()"><div class="cc-icon">✖️</div><div class="cc-title">九九乘法表</div><div class="cc-desc">口诀学习+练习</div></div>
+      <div class="chinese-card" onclick="showPoemHome()"><div class="cc-icon">📜</div><div class="cc-title">古诗背诵</div><div class="cc-desc">上下册14首必背</div></div>
+      <div class="chinese-card" onclick="showTextbookHome()"><div class="cc-icon">📖</div><div class="cc-title">课文背诵</div><div class="cc-desc">关键段落填空</div></div>
+      <div class="chinese-card" onclick="showReadingHome()"><div class="cc-icon">📝</div><div class="cc-title">阅读理解</div><div class="cc-desc">短文+选择题</div></div>
+      <div class="chinese-card" onclick="showSentenceHome()"><div class="cc-icon">✍️</div><div class="cc-title">句子练习</div><div class="cc-desc">仿写·比喻·扩句</div></div>
+      <div class="chinese-card" onclick="showPunctHome()"><div class="cc-icon">❓</div><div class="cc-title">标点符号</div><div class="cc-desc">句号·问号·感叹号</div></div>
     </div>
     <div class="home-progress">
       总进度 <span id="progressTotal">0</span> / 15 ⭐
@@ -359,6 +378,11 @@ body{font-family:'Noto Sans SC',sans-serif;background:#C8E6C9;color:#2D3436;min-
 <!-- Multiplication Result -->
 <div class="screen" id="mulResult">
   <div class="result" id="mulResultContent"></div>
+</div>
+
+<!-- Chinese Learning Screen -->
+<div class="screen" id="chineseHome">
+  <div id="chineseContent"></div>
 </div>
 
 <!-- Quiz Screen -->
@@ -1137,6 +1161,320 @@ function showMulResult(type,score,total,elapsed){
   document.getElementById('mulResultContent').innerHTML=html;
   showScreen('mulResult');
   if(pct>=80) launchConfetti();
+}
+
+// ====== 语文模块数据 ======
+const CHINESE_POEMS={
+'二年级上册':[
+{title:'登鹳雀楼',author:'王之涣',lines:['白日依山尽','黄河入海流','欲穷千里目','更上一层楼'],blanks:{0:['日','山'],2:['里','层']},exp:'站得高才能看得远，要不断进步。'},
+{title:'望庐山瀑布',author:'李白',lines:['日照香炉生紫烟','遥看瀑布挂前川','飞流直下三千尺','疑是银河落九天'],blanks:{0:['紫'],1:['遥','川'],2:['三'],3:['银']},exp:'用夸张手法写瀑布壮观。'},
+{title:'夜宿山寺',author:'李白',lines:['危楼高百尺','手可摘星辰','不敢高声语','恐惊天上人'],blanks:{0:['危','百'],1:['星'],2:['声','语'],3:['惊','天']},exp:'用夸张手法写楼很高。'},
+{title:'敕勒歌',author:'北朝民歌',lines:['敕勒川阴山下','天似穹庐笼盖四野','天苍苍野茫茫','风吹草低见牛羊'],blanks:{0:['敕','阴'],1:['穹','笼'],2:['苍','茫'],3:['见']},exp:'草原辽阔壮美的景象。'},
+{title:'梅花',author:'王安石',lines:['墙角数枝梅','凌寒独自开','遥知不是雪','为有暗香来'],blanks:{0:['墙','凌'],1:['独'],2:['遥'],3:['暗']},exp:'赞美梅花不畏严寒的品格。'},
+{title:'小儿垂钓',author:'胡令能',lines:['蓬头稚子学垂纶','侧坐莓苔草映身','路人借问遥招手','怕得鱼惊不应人'],blanks:{0:['蓬','纶'],1:['莓','苔'],2:['借','遥'],3:['惊','应']},exp:'小孩钓鱼时认真专注的样子。'},
+{title:'江雪',author:'柳宗元',lines:['千山鸟飞绝','万径人踪灭','孤舟蓑笠翁','独钓寒江雪'],blanks:{0:['千','绝'],1:['万','踪'],2:['蓑','笠'],3:['独','寒']},exp:'描绘冬天雪景中孤独的渔翁。'}
+],
+'二年级下册':[
+{title:'村居',author:'高鼎',lines:['草长莺飞二月天','拂堤杨柳醉春烟','儿童散学归来早','忙趁东风放纸鸢'],blanks:{0:['莺','二'],1:['拂','醉'],2:['散','归'],3:['鸢']},exp:'春天里孩子们放风筝的快乐场景。'},
+{title:'咏柳',author:'贺知章',lines:['碧玉妆成一树高','万条垂下绿丝绦','不知细叶谁裁出','二月春风似剪刀'],blanks:{0:['碧','妆','绦'],1:['垂','丝'],2:['裁'],3:['似']},exp:'把春风比作剪刀，赞美春天。'},
+{title:'赋得古原草送别',author:'白居易',lines:['离离原上草','一岁一枯荣','野火烧不尽','春风吹又生'],blanks:{0:['离','原'],1:['枯','荣'],2:['烧','尽'],3:['吹','生']},exp:'小草生命力顽强。'},
+{title:'晓出净慈寺送林子方',author:'杨万里',lines:['毕竟西湖六月中','风光不与四时同','接天莲叶无穷碧','映日荷花别样红'],blanks:{0:['竟','慈'],1:['风','时'],2:['莲','碧'],3:['映','荷']},exp:'西湖六月荷花盛开的美景。'},
+{title:'绝句',author:'杜甫',lines:['两个黄鹂鸣翠柳','一行白鹭上青天','窗含西岭千秋雪','门泊东吴万里船'],blanks:{0:['黄','翠'],1:['鹭','青'],2:['窗','岭'],3:['泊','吴']},exp:'春日里生机勃勃的景色。'},
+{title:'悯农',author:'李绅',lines:['锄禾日当午','汗滴禾下土','谁知盘中餐','粒粒皆辛苦'],blanks:{0:['锄','午'],1:['滴','禾'],2:['餐'],3:['粒','辛']},exp:'粮食来之不易，要珍惜。'},
+{title:'舟夜书所见',author:'查慎行',lines:['月黑见渔灯','孤光一点萤','微微风簇浪','散作满河星'],blanks:{0:['渔'],1:['孤','萤'],2:['簇'],3:['散','满']},exp:'夜晚河上渔灯的美丽景象。'}
+]
+};
+
+const CHINESE_TEXTBOOKS={
+'二年级上册':[
+{title:'小蝌蚪找妈妈',passage:'池塘里有一群小蝌蚪，大大的脑袋，黑灰色的身子，甩着长长的尾巴，快活地游来游去。',blanks:['大大的','黑灰色','长长的','快活']},
+{title:'我是什么',passage:'我会变。太阳一晒，我就变成汽。升到天空，我又变成无数极小极小的点儿，连成一片，在空中飘浮。有时候我穿着白衣服，有时候我穿着黑衣服，早晨和傍晚我又把红袍披在身上。人们叫我云。',blanks:['汽','极小极小','飘浮','白衣服','黑衣服','红袍']},
+{title:'植物妈妈有办法',passage:'孩子如果已经长大，就得告别妈妈，四海为家。牛马有脚，鸟有翅膀，植物旅行又用什么办法？蒲公英妈妈准备了降落伞，把它送给自己的娃娃。只要有风轻轻吹过，孩子们就乘着风纷纷出发。',blanks:['告别','四海为家','翅膀','降落伞','纷纷']},
+{title:'曹冲称象',passage:'曹操问谁有办法把这头大象称一称。有的说得造一杆大秤，砍一棵大树做秤杆。曹操听了直摇头。曹操的儿子曹冲才七岁，他站出来，说他有个办法。把大象赶到一艘大船上，看船身下沉多少，就沿着水面，在船舷上画一条线。再把大象赶上岸，往船上装石头，装到船下沉到画线的地方为止。然后，称一称船上的石头。石头有多重，大象就有多重。',blanks:['秤','砍','舷','沉','为止']},
+{title:'黄山奇石',passage:'闻名中外的黄山风景区在我国安徽省南部。那里景色秀丽神奇，尤其是那些怪石，有趣极了。就说仙桃石吧，它好像从天上飞下来的一个大桃子，落在山顶的石盘上。在一座陡峭的山峰上，有一只猴子。它两只胳膊抱着腿，一动不动地蹲在山头，望着翻滚的云海。这就是有趣的猴子观海。',blanks:['闻名','尤其','秀丽','陡峭','胳膊','翻滚']},
+{title:'日月潭',passage:'日月潭是我国台湾省最大的一个湖。它在台中附近的高山上。那里群山环绕，树木茂盛，周围有许多名胜古迹。日月潭很深，湖水碧绿。湖中央有个美丽的小岛，叫光华岛。小岛把湖水分成两半，北边像圆圆的太阳，叫日潭；南边像弯弯的月亮，叫月潭。',blanks:['环绕','茂盛','碧绿','中央','弯弯']},
+{title:'妈妈睡了',passage:'妈妈哄我午睡的时候，自己先睡着了，睡得好熟，好香。睡梦中的妈妈真美丽。明亮的眼睛闭上了，紧紧地闭着。弯弯的眉毛，也在睡觉，睡在妈妈红润的脸上。',blanks:['哄','熟','明亮','紧紧','弯弯','红润']}
+],
+'二年级下册':[
+{title:'找春天',passage:'春天来了！春天来了！我们几个孩子，脱掉棉袄，冲出家门，奔向田野，去寻找春天。春天像个害羞的小姑娘，遮遮掩掩，躲躲藏藏。我们仔细地找哇，找哇。小草从地下探出头来，那是春天的眉毛吧？',blanks:['棉袄','害羞','遮遮掩掩','躲躲藏藏','探','眉毛']},
+{title:'开满鲜花的小路',passage:'鼹鼠先生收到长颈鹿大叔从非洲寄来的包裹，里面是花籽。包裹漏了，花籽洒了一路。第二年春天，鼹鼠先生走出家门，门前的小路上开满了鲜花。',blanks:['鼹鼠','包裹','花籽','漏','鲜花']},
+{title:'邓小平爷爷植树',passage:'1987年4月5日，是个令人难忘的日子。这一天，万里无云，春风拂面。在天坛公园植树的人群里，83岁高龄的邓小平爷爷格外引人注目。只见他手握铁锹，兴致勃勃地挖着树坑。额头已经满是汗珠，仍不肯休息。',blanks:['难忘','拂面','格外','兴致勃勃','铁锹','珠']},
+{title:'千人糕',passage:'一天，爸爸对孩子说今天我们来吃千人糕吧。孩子很惊讶，什么是千人糕？爸爸说等一会儿你就知道了。不一会儿，爸爸端来一块糕。孩子仔细看了看糕，说这不就是普通的米糕吗？爸爸说你知道这块糕是怎么做成的吗？先把大米磨成粉，再加糖，这就叫千人糕。',blanks:['惊讶','普通','米糕','磨','粉']},
+{title:'一匹出色的马',passage:'一个春天的傍晚，妈妈牵着妹妹，爸爸牵着我，一家人到郊外去散步。我们沿着一条小河走。河水碧绿碧绿的，微风吹过，泛起层层波纹。路的一边是田野，葱葱绿绿的，非常可爱，像一片柔软的绿毯。',blanks:['郊外','散步','碧绿碧绿','波纹','葱葱绿绿','柔软']},
+{title:'雷锋叔叔你在哪里',passage:'沿着长长的小溪，寻找雷锋的足迹。雷锋叔叔，你在哪里，你在哪里？小溪说昨天他曾路过这里，抱着迷路的孩子，冒着蒙蒙的细雨。',blanks:['足迹','曾','蒙蒙','冒着']},
+{title:'传统节日',passage:'春节到，人欢笑，贴窗花，放鞭炮。元宵节，看花灯，大街小巷人如潮。清明节，雨纷纷，先人墓前去祭扫。过端午，赛龙舟，粽子艾香满堂飘。',blanks:['窗花','鞭炮','元宵','祭扫','艾香']}
+]
+};
+
+const READING_QS=[
+{title:'春天来了',passage:'春天来了，小草偷偷地从土里钻出来，嫩嫩的，绿绿的。园子里，田野里，瞧去，一大片一大片满是的。坐着，躺着，打两个滚，踢几脚球，赛几趟跑，捉几回迷藏。风轻悄悄的，草软绵绵的。',questions:[{q:'小草是什么样子的？',opts:['高高的','嫩嫩的、绿绿的','枯黄的','硬硬的'],ans:1},{q:'偷偷地说明小草怎样？',opts:['不想让人看见','悄悄地不知不觉地长出来','害怕','偷偷摸摸'],ans:1},{q:'这段话主要写什么？',opts:['春天的风','春天草地上的活动','春天的树','春天的雨'],ans:1}]},
+{title:'小猴子找东西',passage:'小猴子从树上跳下来，看见一只小松鼠，就问松鼠弟弟你看到我的桃子了吗。小松鼠说没有看见，你去问问小狗吧。小猴子跑到小狗家，小狗正在门口吃骨头。小狗摇摇头说我没有看见你的桃子。小猴子找啊找，最后在自己的口袋里找到了桃子。',questions:[{q:'小猴子在找什么？',opts:['骨头','桃子','松果','香蕉'],ans:1},{q:'小狗在做什么？',opts:['睡觉','在门口吃骨头','跑步','玩耍'],ans:1},{q:'桃子最后在哪里找到的？',opts:['树上','口袋里','地上','小狗家'],ans:1},{q:'这个故事告诉我们什么？',opts:['不要乱放东西','要多问别人','小狗不可靠','猴子很笨'],ans:0}]},
+{title:'我的妈妈',passage:'我的妈妈个子不高，圆圆的脸上有一双大眼睛。妈妈很勤劳，每天早起给我做早饭，送我上学，然后去上班。下班回来还要做家务、辅导我写作业。妈妈虽然很累，但总是笑眯眯的。我想对妈妈说妈妈您辛苦了我爱您。',questions:[{q:'妈妈的外貌是什么样的？',opts:['高个子小眼睛','个子不高、圆脸、大眼睛','瘦瘦的','长头发'],ans:1},{q:'妈妈每天早上做什么？',opts:['睡懒觉','给"我"做早饭送"我"上学','去跑步','看电视'],ans:1},{q:'妈妈下班后做什么？',opts:['看电视','做家务、辅导"我"写作业','逛街','睡觉'],ans:1},{q:'这段话表达了什么感情？',opts:['害怕妈妈','对妈妈的爱和感谢','讨厌妈妈','无所谓'],ans:1}]},
+{title:'秋天的雨',passage:'秋天的雨，是一把钥匙。它带着清凉和温柔，趁你没留意，把秋天的大门打开了。秋天的雨，有一盒五彩缤纷的颜料。你看，它把黄色给了银杏树，黄黄的叶子像一把把小扇子，扇哪扇哪，扇走了夏天的炎热。它把红色给了枫树，红红的枫叶像一枚枚邮票，飘哇飘哇，邮来了秋天的凉爽。',questions:[{q:'秋天的雨像什么？',opts:['一把钥匙','一把扇子','一枚邮票','一条围巾'],ans:0},{q:'银杏树的叶子是什么颜色？',opts:['红色','绿色','黄色','蓝色'],ans:2},{q:'五彩缤纷是什么意思？',opts:['只有一种颜色','颜色很多很丰富','黑白的','透明的'],ans:1},{q:'红红的枫叶像什么？',opts:['小扇子','邮票','蝴蝶','星星'],ans:1}]},
+{title:'一只小鸟',passage:'有一只小鸟，它的巢在高高的树枝上。它还不会飞，每天只能在巢里叽叽喳喳地叫。两只老鸟飞来飞去地找虫子给它吃。小鸟渐渐长大了，有一天，它拍了拍翅膀，试着飞了起来。它越飞越高，看见了大地、河流和美丽的花朵。小鸟高兴极了，唱起了歌。',questions:[{q:'小鸟的巢在哪里？',opts:['地上','墙上','高高的树枝上','屋子里'],ans:2},{q:'谁给小鸟找虫子吃？',opts:['小鸟自己','两只老鸟','小鸟的朋友','猫'],ans:1},{q:'小鸟什么时候学会飞的？',opts:['刚出生','一直会飞','渐渐长大了以后','永远没学会'],ans:2},{q:'小鸟学会飞后心情怎样？',opts:['很害怕','很伤心','高兴极了','很生气'],ans:2}]},
+{title:'雪地里的小画家',passage:'下雪啦，下雪啦！雪地里来了一群小画家。小鸡画竹叶，小狗画梅花，小鸭画枫叶，小马画月牙。不用颜料不用笔，几步就成一幅画。青蛙为什么没参加？它在洞里睡着啦。',questions:[{q:'雪地里来了谁？',opts:['一群小画家','一群小朋友','一群小鸟','一群小猫'],ans:0},{q:'小鸡画什么？',opts:['梅花','竹叶','枫叶','月牙'],ans:1},{q:'小鸭画什么？',opts:['竹叶','梅花','枫叶','月牙'],ans:2},{q:'青蛙为什么没参加？',opts:['它不喜欢画画','它在冬眠','它生病了','它出去了'],ans:1}]},
+{title:'小马过河',passage:'小马和妈妈住在一条小河的旁边。一天，妈妈对小马说："你已经长大了，能不能帮妈妈把这袋麦子驮到河对面的磨坊去？"小马驮起麦子，飞快地跑到了河边。可是小河挡住了去路。老牛伯伯说："水很浅，才到我的小腿。"小松鼠连忙说："深得很！昨天我的一个伙伴就掉进河里淹死了！"小马不知道怎么办才好，跑回去问妈妈。妈妈说："孩子，光听别人说不行，你自己去试一试就知道了。"小马鼓起勇气，小心地趟过了河。原来河水既不像老牛伯伯说的那样浅，也不像小松鼠说的那样深。',questions:[{q:'小马要帮妈妈做什么？',opts:['去钓鱼','驮麦子到磨坊','去玩耍','找朋友'],ans:1},{q:'老牛伯伯觉得河水怎样？',opts:['很深','很浅','很凉','很热'],ans:1},{q:'小松鼠觉得河水怎样？',opts:['很浅','很深很危险','很清','很暖'],ans:1},{q:'妈妈告诉小马什么道理？',opts:['听老牛的','听松鼠的','自己去试一试','不要过河'],ans:2},{q:'最后小马发现河水怎样？',opts:['像老牛说的浅','像松鼠说的深','不深也不浅','非常深'],ans:2}]},
+{title:'乌鸦喝水',passage:'一只乌鸦口渴了，到处找水喝。它找啊找，终于在一个瓶子里发现了水。可是瓶子里的水不多，瓶口又小，乌鸦喝不着水。怎么办呢？乌鸦看见旁边有许多小石子，它想到了一个办法。乌鸦把小石子一颗一颗地放进瓶子里。瓶子里的水渐渐升高了，乌鸦就喝着水了。',questions:[{q:'乌鸦为什么找不到水喝？',opts:['到处都没有水','水在瓶子里但喝不着','它不想喝水','水太烫了'],ans:1},{q:'瓶子里的水为什么喝不着？',opts:['水太多了','水有毒','水不多瓶口又小','水结冰了'],ans:2},{q:'乌鸦用了什么办法？',opts:['把瓶子推倒','用吸管喝','把石子放进瓶子里让水升高','等水流出来'],ans:2},{q:'这个故事告诉我们什么？',opts:['乌鸦很笨','遇到困难要动脑筋想办法','喝水不好','瓶子很重要'],ans:1}]},
+{title:'守株待兔',passage:'从前有个农夫，他在田里干活。有一天，一只野兔从草丛里跑出来，撞到了田边的树桩上，死了。农夫白捡了一只又肥又大的野兔，他高兴极了。从此以后，农夫再也不想种地了。他每天坐在树桩旁边等着再有野兔撞上来。他等啊等，等了很久，再也没有野兔来了。地里的庄稼也枯死了。',questions:[{q:'野兔是怎么死的？',opts:['被农夫打死的','跑到河里淹死的','撞到树桩上撞死的','老死了'],ans:2},{q:'农夫从此以后怎样了？',opts:['更努力种地','再也不想种地了，每天等兔子','去打猎了','搬走了'],ans:1},{q:'结果怎样？',opts:['又等到一只兔子','庄稼也枯死了','农夫变富了','兔子又来了'],ans:1},{q:'这个故事告诉我们什么？',opts:['兔子很笨','不要指望不劳而获，要靠自己劳动','树桩很重要','种地没有用'],ans:1}]},
+{title:'两只蚂蚁',passage:'两只蚂蚁在草地上发现了一颗大糖果。一只蚂蚁说："太好了，我们有糖吃了！"另一只蚂蚁说："糖果太大了，我们两个搬不动。"第一只蚂蚁想了想说："我们回去叫伙伴们一起来搬吧。"于是它跑回蚁穴，叫来了十几只蚂蚁。大家一起用力，终于把糖果搬回了家。蚁后很高兴，奖赏了每只蚂蚁一点糖浆。',questions:[{q:'两只蚂蚁发现了什么？',opts:['一颗米饭','一颗大糖果','一片树叶','一颗石子'],ans:1},{q:'为什么它们一开始搬不动？',opts:['糖太重了','蚂蚁太小了','糖太大了','它们不想搬'],ans:2},{q:'它们怎么解决的？',opts:['放弃了','回去叫伙伴来帮忙','用工具搬','把糖切开'],ans:1},{q:'这个故事说明了什么？',opts:['蚂蚁爱吃糖','团结力量大','糖果很重','蚂蚁很小'],ans:1}]},
+{title:'骄傲的孔雀',passage:'孔雀有一身美丽的羽毛，它非常骄傲。有一天，它在湖边散步，看见一只小麻雀在树枝上唱歌。孔雀说："你长得那么丑，还好意思唱歌！"小麻雀没有理它，继续快乐地唱着歌。后来天上下起了大雨，孔雀漂亮的羽毛被雨淋湿了，变得灰溜溜的。而小麻雀拍拍翅膀飞回了温暖的家。孔雀这才明白，外表好看并不等于什么都好。',questions:[{q:'孔雀为什么骄傲？',opts:['因为它会飞','因为它有美丽的羽毛','因为它很大','因为它会唱歌'],ans:1},{q:'孔雀对小麻雀说了什么？',opts:['你唱得真好','我们一起玩吧','你长得那么丑还好意思唱歌','你去哪里'],ans:2},{q:'下雨后孔雀怎样了？',opts:['羽毛更漂亮了','羽毛被淋湿变得灰溜溜的','它躲起来了','它飞走了'],ans:1},{q:'这个故事告诉我们什么？',opts:['孔雀很美','不要骄傲，外表好看不等于什么都好','小麻雀会飞','下雨要回家'],ans:1}]},
+{title:'蚂蚁搬家',passage:'一天下午，小明在院子里玩耍。他看见一群蚂蚁排着长长的队伍在搬家。有的蚂蚁背着米饭粒，有的扛着面包屑，有的拖着小虫子，大家都在忙忙碌碌地往高处走。小明觉得很奇怪，就去问爷爷。爷爷抬头看了看天说："要下雨了，蚂蚁怕雨水把洞淹了，所以搬到高处去。"果然，过了一会儿天空乌云密布，下起了大雨。',questions:[{q:'蚂蚁在做什么？',opts:['搬家','吃饭','打架','玩耍'],ans:0},{q:'蚂蚁往哪里搬？',opts:['往低处','往水里','往高处','往远处'],ans:2},{q:'蚂蚁为什么要搬家？',opts:['搬家好玩','要下雨了怕洞被淹','找更多食物','天太热了'],ans:1},{q:'这个故事说明蚂蚁有什么本领？',opts:['会飞','能预报天气','会唱歌','会游泳'],ans:1}]},
+{title:'小蜗牛',passage:'春天来了，蜗牛妈妈对小蜗牛说："孩子，到树林里去玩吧，小树发芽了。"小蜗牛爬呀爬呀，好久才爬回来。它说："妈妈，小树长满了叶子，碧绿碧绿的，地上还长着许多草莓呢。"蜗牛妈妈说："已经是夏天了！快去摘几颗草莓回来。"小蜗牛爬呀爬呀，好久才爬回来。它说："妈妈，草莓没有了，地上长着蘑菇，树叶全变黄了。"蜗牛妈妈说："已经是秋天了！快去采几个蘑菇回来。"小蜗牛爬呀爬呀，好久才爬回来。它说："妈妈，蘑菇没有了，地上盖着雪，树叶全掉了。"蜗牛妈妈说："已经是冬天了！你就待在家里过冬吧。"',questions:[{q:'小蜗牛第一次出门看到了什么？',opts:['草莓','小树发芽了','蘑菇','雪'],ans:1},{q:'小蜗牛第二次出门看到了什么？',opts:['小树发芽','草莓','雪','什么都没有'],ans:1},{q:'为什么小蜗牛总是错过季节？',opts:['它走错了方向','它爬得太慢了','它不想去','它迷路了'],ans:1},{q:'这个故事用了什么写作方法？',opts:['反复','比喻','拟人','夸张'],ans:0}]}
+];
+
+const SENTENCE_QS=[
+{type:'仿写',q:'例：小鸟在树上唱歌。\n仿写：______在______唱歌。',opts:['小鱼在河里','花儿在草地','星星在天上','以上都可以'],ans:3,exp:'只要句式对"谁在哪里做什么"都可以。'},
+{type:'比喻句',q:'弯弯的月亮像______。',opts:['一条小船','一个圆盘','一棵大树','一朵花'],ans:0,exp:'弯弯的月亮像小船，这是经典的比喻句。'},
+{type:'拟人句',q:'"花儿笑了。"这句话用了什么修辞手法？',opts:['比喻','拟人','夸张','排比'],ans:1,exp:'把花儿当成人来写"笑了"，是拟人。'},
+{type:'把字句',q:'把下面的句子改成"把"字句：\n"风吹倒了小树。"',opts:['小树把风吹倒了','风把小树吹倒了','小树被风吹倒了','风吹了小树倒'],ans:1,exp:'把字句格式：主语+把+对象+动作。'},
+{type:'被字句',q:'把下面的句子改成"被"字句：\n"大风吹倒了小树。"',opts:['大风把小树吹倒了','小树把大风吹倒了','小树被大风吹倒了','大风被小树吹倒了'],ans:2,exp:'被字句格式：对象+被+主语+动作。'},
+{type:'扩句',q:'扩句："小猫吃鱼。"\n扩写后应该是什么？',opts:['小猫吃了一条鱼','可爱的小猫吃了一条新鲜的鱼','猫吃鱼','小猫在吃鱼'],ans:1,exp:'扩句要让句子更具体更生动，加上形容词和修饰词。'},
+{type:'连词成句',q:'把词语排成通顺的句子：\n"在 小鸟 树上 唱歌"',opts:['小鸟在树上唱歌','树上在小鸟唱歌','唱歌在小鸟树上','在树上小鸟唱歌'],ans:0,exp:'正确语序：主语+在+地点+做什么。'},
+{type:'关联词',q:'"因为下雨了，______。"横线上填什么最恰当？',opts:['所以地上湿了','但是地上干了','可是太阳很大','所以天晴了'],ans:0,exp:'因为所以是因果关系。'},
+{type:'感叹句',q:'把"花儿很美。"改成感叹句：',opts:['花儿很美吗？','花儿不太美','花儿真美啊！','花儿美不美？'],ans:2,exp:'感叹句用！结尾，表示强烈感情。'},
+{type:'疑问句',q:'下面哪一句是疑问句？',opts:['今天天气很好。','你叫什么名字？','我喜欢吃苹果。','花园里花开了。'],ans:1,exp:'疑问句用？结尾，表示提问。'},
+{type:'病句修改',q:'下面哪句话有语病？',opts:['我今天很高兴。','我写完了作业在家里。','春天花儿开了。','小鸟在天上飞。'],ans:1,exp:'语序不当，应改为"我在家里写完了作业"。'},
+{type:'缩句',q:'"可爱的小猫在阳台上懒洋洋地晒太阳。"缩句后是？',opts:['小猫在阳台上晒太阳','可爱的小猫在晒太阳','小猫晒太阳','小猫在阳台上懒洋洋地'],ans:2,exp:'缩句去掉修饰词，保留"谁做什么"：小猫晒太阳。'},
+{type:'关联词',q:'"______天气很冷，______同学们依然坚持跑步。"横线上填什么？',opts:['因为……所以……','虽然……但是……','如果……就……','不但……而且……'],ans:1,exp:'转折关系用"虽然……但是……"。'},
+{type:'修辞判断',q:'"星星眨着眼睛。"用了什么修辞手法？',opts:['比喻','夸张','拟人','排比'],ans:2,exp:'把星星当成人来写"眨眼睛"，是拟人。'},
+{type:'句式变换',q:'把"这朵花真美。"改成反问句：',opts:['这朵花真美吗？','这朵花难道不美吗？','这朵花不太美。','这朵花美不美？'],ans:1,exp:'反问句用"难道不……吗"，加强语气。'},
+{type:'病句修改',q:'下面哪句话是病句？',opts:['他跑得很快。','我们要养成讲卫生。','今天下雨了。','妈妈做的饭很好吃。'],ans:1,exp:'缺少宾语，应改为"我们要养成讲卫生的好习惯"。'},
+{type:'扩句',q:'扩句："小明写字。"扩写后应该是什么？',opts:['小明写字。','小明在写字。','小明正在认真地写字。','写字。'],ans:2,exp:'扩句要加修饰词让句子更具体：谁+怎样地+做什么。'},
+{type:'修改语序',q:'把"在家里我每天练琴"改成通顺的句子：',opts:['我每天在家里练琴。','每天我练琴在家里。','练琴我每天在家里。','在家里练琴每天我。'],ans:0,exp:'正确语序：主语+时间+地点+做什么。'},
+{type:'修辞判断',q:'"飞流直下三千尺，疑是银河落九天。"用了什么修辞手法？',opts:['拟人','比喻','夸张','排比'],ans:2,exp:'"三千尺"是夸张手法，形容瀑布很高很长。'}
+];
+
+const PUNCT_QS=[
+{q:'"今天天气真好____"这句话应该用什么标点？',opts:['。','？','！','，'],ans:0,exp:'陈述句用句号。'},
+{q:'"你去过北京吗____"这句话应该用什么标点？',opts:['。','？','！','……'],ans:1,exp:'问句用问号。'},
+{q:'"多么美丽的花啊____"这句话应该用什么标点？',opts:['。','？','！','……'],ans:2,exp:'感叹句用感叹号。'},
+{q:'"妈妈____你回来了。"横线上应该填什么标点？',opts:['，','。','？','！'],ans:0,exp:'称呼语后面用逗号。'},
+{q:'"我爱吃苹果____香蕉____橘子。"横线上应该填什么标点？',opts:['，','。','、','……'],ans:2,exp:'并列词语之间用顿号。'},
+{q:'下列句子标点使用正确的是？',opts:['你吃饭了吗。','你吃饭了吗？','你吃饭了吗！','你吃饭了吗，'],ans:1,exp:'问句用问号。'},
+{q:'"下雪了____下雪了____"横线上应该填什么标点？',opts:['两个句号','两个问号','两个感叹号','两个顿号'],ans:2,exp:'高兴激动的语气用感叹号。'},
+{q:'"他跑得真快____"省略号表示什么？',opts:['话没说完','声音很长','话很多','声音很响'],ans:0,exp:'省略号可以表示话还没说完。'},
+{q:'"妈妈说____今天要下雨。"这里冒号的作用是？',opts:['表示列举','表示解释说明','表示引出说话内容','表示转折'],ans:2,exp:'冒号用在"说"后面，引出说话内容。'},
+{q:'下面哪句话标点用法错误？',opts:['你喜欢什么颜色？','今天是星期一。','快跑！','你去那里，他也去。'],ans:3,exp:'两个分句应用分号或句号隔开。'},
+{q:'"春天来了____花开了____草绿了。"应该填什么标点？',opts:['三处都用逗号','两处都用句号','前两处用逗号最后用句号','前两处用顿号'],ans:2,exp:'并列分句间用逗号，句末用句号。'},
+{q:'"他什么时候回来____"应该用什么标点？',opts:['。','？','！','……'],ans:1,exp:'有疑问词的问句用问号。'},
+{q:'"哇____好漂亮啊____"这里连续用了什么标点？',opts:['两个句号','一个感叹号一个句号','两个感叹号','一个问号一个感叹号'],ans:2,exp:'表示强烈感情连续用感叹号。'},
+{q:'下面哪个标点不能用在句子末尾？',opts:['。','？','！','、'],ans:3,exp:'顿号用于句内并列词语之间，不能用在句末。'}
+];
+
+// ====== 语文模块函数 ======
+function showChineseHome(){
+  let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="goHome()">‹ 返回首页</button><span class="tag" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">📚 语文学习</span></div><h2>📚 二年级语文学习</h2></div><div class="chinese-nav">';
+  html+='<div class="chinese-card" onclick="showPoemHome()"><div class="cc-icon">📜</div><div class="cc-title">古诗背诵</div><div class="cc-desc">上下册14首必背</div></div>';
+  html+='<div class="chinese-card" onclick="showTextbookHome()"><div class="cc-icon">📖</div><div class="cc-title">课文背诵</div><div class="cc-desc">关键段落填空</div></div>';
+  html+='<div class="chinese-card" onclick="showReadingHome()"><div class="cc-icon">📝</div><div class="cc-title">阅读理解</div><div class="cc-desc">短文+选择题</div></div>';
+  html+='<div class="chinese-card" onclick="showSentenceHome()"><div class="cc-icon">✍️</div><div class="cc-title">句子练习</div><div class="cc-desc">仿写·比喻·扩句</div></div>';
+  html+='<div class="chinese-card" onclick="showPunctHome()"><div class="cc-icon">❓</div><div class="cc-title">标点符号</div><div class="cc-desc">句号·问号·感叹号</div></div>';
+  html+='</div>';
+  document.getElementById('chineseContent').innerHTML=html;
+  showScreen('chineseHome');
+}
+
+function showPoemHome(){
+  let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">📜 古诗背诵</span></div><h2>📜 二年级必背古诗</h2></div>';
+  ['二年级上册','二年级下册'].forEach(sem=>{
+    html+='<h3 style="font-size:24px;font-weight:800;margin:20px 0 12px">📚 '+sem+'</h3><div class="method-list">';
+    CHINESE_POEMS[sem].forEach((p,i)=>{
+      html+='<div class="poem-card"><div class="poem-title">'+p.title+'</div><div class="poem-author">'+p.author+'</div><div class="poem-body">';
+      p.lines.forEach(l=>{html+='<div>'+l+'</div>';});
+      html+='</div><div style="display:flex;gap:12px;margin-top:12px"><button class="learn-btn" style="padding:12px 24px;font-size:16px" onclick="speakSequence([\''+p.title+'，'+p.author+'。'+p.lines.join("。")+'\'],null)">🔊 朗读</button><button class="start-btn" style="padding:12px 24px;font-size:16px" onclick="startPoemQuiz(\''+sem+'\','+i+')">✍️ 背诵测试</button></div></div>';
+    });
+    html+='</div>';
+  });
+  document.getElementById('chineseContent').innerHTML=html;
+  showScreen('chineseHome');
+}
+
+let poemQuizState={poem:null};
+function startPoemQuiz(sem,idx){
+  const poem=CHINESE_POEMS[sem][idx];
+  poemQuizState={poem};
+  let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showPoemHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">✍️ 背诵测试</span></div><h2>'+poem.title+' - '+poem.author+'</h2></div>';
+  html+='<div class="mul-q-card" style="text-align:left">';
+  html+='<div style="font-size:18px;color:#888;margin-bottom:16px">📝 根据记忆填写空白处：</div>';
+  poem.lines.forEach((line,li)=>{
+    let lineHtml='<div style="font-size:28px;font-weight:700;line-height:2;margin:8px 0">';
+    if(poem.blanks&&poem.blanks[li]){
+      const blanks=poem.blanks[li];
+      let rest=line;
+      blanks.forEach(b=>{
+        const pos=rest.indexOf(b);
+        if(pos>=0){
+          lineHtml+=rest.substring(0,pos)+'<input class="fill-input" data-ans="'+b+'" maxlength="'+b.length+'">';
+          rest=rest.substring(pos+b.length);
+        }
+      });
+      lineHtml+=rest;
+    }else{lineHtml+=line;}
+    lineHtml+='</div>';
+    html+=lineHtml;
+  });
+  html+='<div style="margin-top:20px;display:flex;gap:12px"><button class="next-btn" onclick="checkPoemQuiz()" style="background:linear-gradient(135deg,#00B894,#55EFC4)">✅ 检查答案</button><button class="next-btn" onclick="revealPoemQuiz()" style="background:linear-gradient(135deg,#6C5CE7,#A29BFE)">👁️ 显示答案</button></div>';
+  html+='<div id="poemResult" style="margin-top:16px"></div></div>';
+  document.getElementById('chineseContent').innerHTML=html;
+  showScreen('chineseHome');
+}
+
+function checkPoemQuiz(){
+  const inputs=document.querySelectorAll('#chineseContent .fill-input');
+  let c=0,t=inputs.length;
+  inputs.forEach(inp=>{
+    if(inp.value.trim()===inp.getAttribute('data-ans')){inp.style.borderColor='#28A745';inp.style.color='#28A745';c++;}
+    else{inp.style.borderColor='#DC3545';inp.style.color='#DC3545';}
+  });
+  document.getElementById('poemResult').innerHTML='<div style="font-size:22px;font-weight:700;color:'+(c===t?'#00B894':'#E17055')+'">答对 '+c+'/'+t+' '+(c===t?'🎉 全对！':'💪 继续加油！')+'</div>';
+}
+function revealPoemQuiz(){
+  document.querySelectorAll('#chineseContent .fill-input').forEach(inp=>{inp.value=inp.getAttribute('data-ans');inp.style.borderColor='#6C5CE7';inp.style.color='#6C5CE7';});
+}
+
+function showTextbookHome(){
+  let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#FF8E53,#FDCB6E)">📖 课文背诵</span></div><h2>📖 二年级课文背诵</h2></div>';
+  ['二年级上册','二年级下册'].forEach(sem=>{
+    html+='<h3 style="font-size:24px;font-weight:800;margin:20px 0 12px">📚 '+sem+'</h3><div class="method-list">';
+    CHINESE_TEXTBOOKS[sem].forEach((t,i)=>{
+      html+='<div class="method-card" onclick="startTextbookQuiz(\''+sem+'\','+i+')"><div class="mc-head"><div class="mc-icon">📖</div><div><div class="mc-title">'+t.title+'</div><div class="mc-sub">'+t.passage.substring(0,30)+'...</div><span class="mc-tag green">点击背诵测试</span></div></div></div>';
+    });
+    html+='</div>';
+  });
+  document.getElementById('chineseContent').innerHTML=html;
+  showScreen('chineseHome');
+}
+
+function startTextbookQuiz(sem,idx){
+  const text=CHINESE_TEXTBOOKS[sem][idx];
+  let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showTextbookHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#FF8E53,#FDCB6E)">📖 背诵测试</span></div><h2>'+text.title+'</h2></div>';
+  html+='<div class="mul-q-card" style="text-align:left"><div style="font-size:18px;color:#888;margin-bottom:16px">📝 根据记忆填写关键词：</div><div style="font-size:22px;line-height:2">';
+  let passage=text.passage;
+  (text.blanks||[]).forEach(k=>{
+    passage=passage.replace(new RegExp(k,'g'),'<input class="fill-input" data-ans="'+k+'" style="width:'+k.length*24+'px" maxlength="'+k.length+'">');
+  });
+  html+=passage+'</div>';
+  html+='<div style="margin-top:20px;display:flex;gap:12px"><button class="next-btn" onclick="checkTextbookQuiz()" style="background:linear-gradient(135deg,#00B894,#55EFC4)">✅ 检查答案</button><button class="next-btn" onclick="revealTextbookQuiz()" style="background:linear-gradient(135deg,#6C5CE7,#A29BFE)">👁️ 显示答案</button></div>';
+  html+='<div id="textbookResult" style="margin-top:16px"></div></div>';
+  document.getElementById('chineseContent').innerHTML=html;
+  showScreen('chineseHome');
+}
+
+function checkTextbookQuiz(){
+  const inputs=document.querySelectorAll('#chineseContent .fill-input');
+  let c=0,t=inputs.length;
+  inputs.forEach(inp=>{
+    if(inp.value.trim()===inp.getAttribute('data-ans')){inp.style.borderColor='#28A745';inp.style.color='#28A745';c++;}
+    else{inp.style.borderColor='#DC3545';inp.style.color='#DC3545';}
+  });
+  document.getElementById('textbookResult').innerHTML='<div style="font-size:22px;font-weight:700;color:'+(c===t?'#00B894':'#E17055')+'">答对 '+c+'/'+t+' '+(c===t?'🎉 全对！':'💪 继续加油！')+'</div>';
+}
+function revealTextbookQuiz(){
+  document.querySelectorAll('#chineseContent .fill-input').forEach(inp=>{inp.value=inp.getAttribute('data-ans');inp.style.borderColor='#6C5CE7';inp.style.color='#6C5CE7';});
+}
+
+function showReadingHome(){
+  let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#6C5CE7,#A29BFE)">📝 阅读理解</span></div><h2>📝 阅读理解练习</h2></div><div class="method-list">';
+  READING_QS.forEach((r,i)=>{
+    html+='<div class="method-card" onclick="startReadingQuiz('+i+')"><div class="mc-head"><div class="mc-icon">📝</div><div><div class="mc-title">'+r.title+'</div><div class="mc-sub">'+r.passage.substring(0,40)+'...</div><span class="mc-tag purple">'+r.questions.length+'道题</span></div></div></div>';
+  });
+  html+='</div>';
+  document.getElementById('chineseContent').innerHTML=html;
+  showScreen('chineseHome');
+}
+
+let readingQuizState={idx:0,correct:0};
+function startReadingQuiz(articleIdx){
+  readingQuizState={articleIdx,correct:0,qIdx:0};
+  renderReadingQ();
+}
+function renderReadingQ(){
+  const s=readingQuizState;
+  const article=READING_QS[s.articleIdx];
+  if(s.qIdx>=article.questions.length){
+    const t=article.questions.length;
+    const pct=Math.round(s.correct/t*100);
+    document.getElementById('chineseContent').innerHTML='<div class="mul-q-card"><div style="font-size:60px;margin-bottom:12px">'+(pct>=80?'🎉':'💪')+'</div><div style="font-size:28px;font-weight:900;margin-bottom:8px">'+article.title+' 完成！</div><div style="font-size:22px;color:#555;margin-bottom:16px">答对 '+s.correct+'/'+t+'（'+pct+'%）</div><button class="next-btn" onclick="showReadingHome()">🏠 返回</button></div>';
+    return;
+  }
+  const q=article.questions[s.qIdx];
+  let html='<div class="mul-q-card" style="text-align:left">';
+  html+='<div style="font-size:16px;color:#888;margin-bottom:8px">📖 '+article.title+'（第'+(s.qIdx+1)+'/'+article.questions.length+'题）</div>';
+  html+='<div style="background:#F8F9FF;border-radius:12px;padding:16px;margin-bottom:20px;font-size:18px;line-height:1.8;border-left:4px solid #6C5CE7">'+article.passage+'</div>';
+  html+='<div style="font-size:22px;font-weight:700;margin-bottom:16px">'+q.q+'</div><div class="mul-opts">';
+  q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkReading('+i+','+q.ans+',this)">'+String.fromCharCode(65+i)+'. '+o+'</div>';});
+  html+='</div></div>';
+  document.getElementById('chineseContent').innerHTML=html;
+  showScreen('chineseHome');
+}
+function checkReading(chosen,correct,el){
+  if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
+  const allOpts=document.querySelectorAll('#chineseContent .mul-opt');
+  allOpts.forEach(o=>o.classList.add('disabled-after'));
+  if(chosen===correct){el.classList.add('correct');readingQuizState.correct++;}
+  else{el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});}
+  setTimeout(()=>{readingQuizState.qIdx++;renderReadingQ()},1200);
+}
+
+let sentenceState={idx:0,correct:0};
+function showSentenceHome(){
+  sentenceState={idx:0,correct:0};
+  renderSentenceQ();
+  showScreen('chineseHome');
+}
+function renderSentenceQ(){
+  const s=sentenceState;
+  if(s.idx>=SENTENCE_QS.length){
+    const t=SENTENCE_QS.length;const pct=Math.round(s.correct/t*100);
+    document.getElementById('chineseContent').innerHTML='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#00B894,#55EFC4)">✍️ 句子练习</span></div></div><div class="mul-q-card"><div style="font-size:50px;margin-bottom:12px">'+(pct>=80?'🎉':'💪')+'</div><div style="font-size:28px;font-weight:900">句子练习完成！</div><div style="font-size:22px;color:#555;margin:8px 0 16px">答对 '+s.correct+'/'+t+'（'+pct+'%）</div><button class="next-btn" onclick="showSentenceHome()">🔄 再来一轮</button><button class="next-btn" onclick="showChineseHome()" style="background:transparent;color:#888;border:2px solid #ddd">🏠 返回</button></div>';
+    return;
+  }
+  const q=SENTENCE_QS[s.idx];
+  let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#00B894,#55EFC4)">✍️ 句子练习</span></div><h2>✍️ 句子练习</h2></div>';
+  html+='<div class="mul-q-card" style="text-align:left"><div style="font-size:16px;color:#888;margin-bottom:8px">第 '+(s.idx+1)+' / '+SENTENCE_QS.length+' 题</div>';
+  html+='<div style="font-size:14px;color:#6C5CE7;font-weight:700;margin-bottom:8px">'+q.type+'</div>';
+  html+='<div style="font-size:22px;font-weight:700;white-space:pre-line;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
+  q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkSentence('+i+','+q.ans+',this)">'+String.fromCharCode(65+i)+'. '+o+'</div>';});
+  html+='</div></div>';
+  document.getElementById('chineseContent').innerHTML=html;
+}
+function checkSentence(chosen,correct,el){
+  if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
+  const allOpts=document.querySelectorAll('#chineseContent .mul-opt');
+  allOpts.forEach(o=>o.classList.add('disabled-after'));
+  if(chosen===correct){el.classList.add('correct');sentenceState.correct++;}
+  else{el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});}
+  setTimeout(()=>{sentenceState.idx++;renderSentenceQ()},1200);
+}
+
+let punctState={idx:0,correct:0};
+function showPunctHome(){
+  punctState={idx:0,correct:0};
+  renderPunctQ();
+  showScreen('chineseHome');
+}
+function renderPunctQ(){
+  const s=punctState;
+  if(s.idx>=PUNCT_QS.length){
+    const t=PUNCT_QS.length;const pct=Math.round(s.correct/t*100);
+    document.getElementById('chineseContent').innerHTML='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#E17055,#FDCB6E)">❓ 标点符号</span></div></div><div class="mul-q-card"><div style="font-size:50px;margin-bottom:12px">'+(pct>=80?'🎉':'💪')+'</div><div style="font-size:28px;font-weight:900">标点符号练习完成！</div><div style="font-size:22px;color:#555;margin:8px 0 16px">答对 '+s.correct+'/'+t+'（'+pct+'%）</div><button class="next-btn" onclick="showPunctHome()">🔄 再来一轮</button><button class="next-btn" onclick="showChineseHome()" style="background:transparent;color:#888;border:2px solid #ddd">🏠 返回</button></div>';
+    return;
+  }
+  const q=PUNCT_QS[s.idx];
+  let html='<div class="learn-header"><div class="top-bar"><button class="back-home" onclick="showChineseHome()">‹ 返回</button><span class="tag" style="background:linear-gradient(135deg,#E17055,#FDCB6E)">❓ 标点符号</span></div><h2>❓ 标点符号练习</h2></div>';
+  html+='<div class="mul-q-card" style="text-align:left"><div style="font-size:16px;color:#888;margin-bottom:8px">第 '+(s.idx+1)+' / '+PUNCT_QS.length+' 题</div>';
+  html+='<div style="font-size:22px;font-weight:700;margin-bottom:20px;line-height:1.6">'+q.q+'</div><div class="mul-opts">';
+  q.opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkPunct('+i+','+q.ans+',this)">'+String.fromCharCode(65+i)+'. '+o+'</div>';});
+  html+='</div></div>';
+  document.getElementById('chineseContent').innerHTML=html;
+}
+function checkPunct(chosen,correct,el){
+  if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
+  const allOpts=document.querySelectorAll('#chineseContent .mul-opt');
+  allOpts.forEach(o=>o.classList.add('disabled-after'));
+  if(chosen===correct){el.classList.add('correct');punctState.correct++;}
+  else{el.classList.add('wrong');allOpts.forEach((o,i)=>{if(i===correct)o.classList.add('correct');});}
+  setTimeout(()=>{punctState.idx++;renderPunctQ()},1200);
 }
 
 // Init
