@@ -198,6 +198,10 @@ body{font-family:'Noto Sans SC',sans-serif;background:#C8E6C9;color:#2D3436;min-
 .mul-opt.wrong{background:#F8D7DA;border-color:#DC3545;color:#721C24;transform:scale(1.03);box-shadow:0 0 0 3px rgba(220,53,69,.3)}
 .mul-opt.wrong::after{content:' ❌';font-size:20px}
 .mul-opt.disabled-after{pointer-events:none;opacity:.55}
+.mul-opt.selected{background:#E3F2FD;border-color:#2196F3;color:#1565C0;transform:translateY(-2px);box-shadow:0 4px 15px rgba(33,150,243,.3)}
+.mul-opt.selected::before{content:'🔵';margin-right:6px}
+.mul-opt.missed{background:#FFF3E0;border-color:#FF9800;color:#E65100;transform:scale(1.03);box-shadow:0 0 0 3px rgba(255,152,0,.3);opacity:.8}
+.mul-opt.missed::after{content:' ❌本该选';font-size:16px}
 
 /* Mul Quiz */
 .mul-timer{font-size:20px;font-weight:700;color:#E17055;text-align:center;margin:8px 0}
@@ -1429,7 +1433,7 @@ const CHAR_DATA=[
 {char:'巳',pinyin:'sì',radical:'己',strokes:3,words:['巳时'],similar:['己','已'],tips:'全封口——巳时的巳'},
 {char:'大',pinyin:'dà',radical:'大',strokes:3,words:['大家','大人'],similar:['太','犬'],tips:'张开双臂就是大'},
 {char:'太',pinyin:'tài',radical:'大',strokes:4,words:['太阳','太多'],similar:['大','犬'],tips:'大字下面加一点就是太'},
-{char:'犬',pinyin:'quǎn',radical:'大',strokes:4,words:['小狗','犬牙'],similar:['大','太'],tips:'大字右上加一点就是犬'},
+{char:'犬',pinyin:'quǎn',radical:'大',strokes:4,words:['警犬','犬牙'],similar:['大','太'],tips:'大字右上加一点就是犬'},
 {char:'人',pinyin:'rén',radical:'人',strokes:2,words:['人们','人生'],similar:['入','八'],tips:'一撇一捺就是人'},
 {char:'入',pinyin:'rù',radical:'入',strokes:2,words:['进入','入口'],similar:['人','八'],tips:'一撇短一捺长就是入'},
 {char:'八',pinyin:'bā',radical:'八',strokes:2,words:['八个','八方'],similar:['人','入'],tips:'两笔分开像八'},
@@ -1513,7 +1517,7 @@ const CHAR_DATA=[
 // 烧/浇/晓
 {char:'烧',pinyin:'shāo',radical:'火',strokes:10,words:['燃烧','发烧'],similar:['浇','晓'],tips:'火字旁——"烧"火'},
 {char:'浇',pinyin:'jiāo',radical:'氵',strokes:9,words:['浇水','浇花'],similar:['烧','晓'],tips:'三点水——"浇"水'},
-{char:'晓',pinyin:'xiǎo',radical:'日',strokes:10,words:['春晓','知道'],similar:['烧','浇'],tips:'日字旁——春"晓"'},
+{char:'晓',pinyin:'xiǎo',radical:'日',strokes:10,words:['春晓','知晓'],similar:['烧','浇'],tips:'日字旁——春"晓"'},
 // 披/被/坡
 {char:'披',pinyin:'pī',radical:'扌',strokes:8,words:['披风','披上'],similar:['被','坡'],tips:'提手旁——"披"衣服'},
 {char:'被',pinyin:'bèi',radical:'衤',strokes:10,words:['被子','被动'],similar:['披','坡'],tips:'衣字旁——"被"子'},
@@ -1827,27 +1831,33 @@ function renderCharQ(){
   let html='<div class="mul-q-card" style="text-align:left">';
   html+='<div class="top-bar" style="margin-bottom:12px"><button class="back-home" onclick="showCharHome()">‹ 返回</button><span style="font-size:16px;color:#888">第 '+(s.idx+1)+' / '+s.questions.length+' 题</span></div>';
   if(s.mode==='word'){
+    let wordGameCorrect=[];
     html+='<div style="font-size:52px;font-weight:900;text-align:center;margin:20px 0;background:#FFF3E0;padding:20px;border-radius:16px;cursor:pointer" onclick="speak(\''+q.char+'\')">'+q.char+'<div style="font-size:16px;color:#888">'+q.pinyin+' 🔊</div></div>';
-    html+='<div style="font-size:18px;text-align:center;margin-bottom:12px">下面哪个词包含「'+q.char+'」？</div><div class="mul-opts">';
-    const correctWord=q.words[Math.floor(Math.random()*q.words.length)];
-    // 用相似字的词做干扰项
-    let wrongPool=[];
+    html+='<div style="font-size:18px;text-align:center;margin-bottom:12px;color:#555">请选出所有包含「'+q.char+'」的词 <span style="font-size:14px;color:#999">（可多选）</span></div><div class="mul-opts">';
+    // 取2个正确词（多音字包含multiWords）
+    const allCorrectWords=[...q.words,...(q.multiWords||[])];
+    const cWords=allCorrectWords.sort(()=>Math.random()-0.5).slice(0,Math.min(2,allCorrectWords.length));
+    // 干扰项
+    let wPool=[];
     if(q.similar&&q.similar.length>0){
-      q.similar.forEach(s=>{
-        const sc=CHAR_DATA.find(x=>x.char===s);
-        if(sc&&sc.words)wrongPool.push(...sc.words);
-      });
+      q.similar.forEach(s=>{const sc=CHAR_DATA.find(x=>x.char===s);if(sc&&sc.words)wPool.push(...sc.words);});
     }
-    if(wrongPool.length<3){
+    wPool=wPool.filter(w=>!w.includes(q.char));
+    if(wPool.length<4){
       const extras=CHAR_DATA.filter(x=>x.char!==q.char&&!q.similar.includes(x.char)&&x.words&&x.words.length>0).flatMap(x=>x.words);
-      wrongPool.push(...extras);
+      wPool.push(...extras);
     }
-    wrongPool=[...new Set(wrongPool)].filter(w=>w!==correctWord);
-    wrongPool.sort(()=>Math.random()-0.5);
-    let opts=[correctWord,...wrongPool.slice(0,3)];
-    opts.sort(()=>Math.random()-0.5);
-    const ci=opts.indexOf(correctWord);
-    opts.forEach((o,i)=>{html+='<div class="mul-opt" onclick="checkCharQ('+i+','+ci+',this)">'+o+'</div>';});
+    wPool=[...new Set(wPool)].filter(w=>!cWords.includes(w)&&!w.includes(q.char));
+    wPool.sort(()=>Math.random()-0.5);
+    const allWords=[...cWords,...wPool.slice(0,4)];
+    allWords.sort(()=>Math.random()-0.5);
+    allWords.forEach((w,i)=>{
+      if(cWords.includes(w))wordGameCorrect.push(i);
+      html+='<div class="mul-opt mul-opt-selectable" onclick="toggleWordOpt('+i+',this)">'+w+'</div>';
+    });
+    // 存正确索引到dom
+    html+='</div>';
+    html+='<div style="text-align:center;margin-top:16px"><button class="next-btn" onclick="submitWordGame('+JSON.stringify(wordGameCorrect)+',\''+q.char+'\')">✅ 确认提交</button></div>';
   }else if(s.mode==='recog'){
     html+='<div style="font-size:36px;font-weight:900;text-align:center;margin:20px 0;background:#E8F5E9;padding:20px;border-radius:16px">'+q.blank+'</div>';
     html+='<div style="font-size:18px;text-align:center;margin-bottom:12px">横线上应该填哪个字？</div><div class="mul-opts">';
@@ -1903,6 +1913,46 @@ function checkCharQ(chosen,correct,el){
     const notice=document.createElement('div');
     notice.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;max-width:500px;width:90%';
     notice.innerHTML=expText;
+    document.body.appendChild(notice);
+    setTimeout(()=>notice.remove(),2000);
+  }
+  setTimeout(()=>{s.idx++;renderCharQ()},1200);
+}
+function toggleWordOpt(idx,el){
+  if(el.classList.contains('disabled-after'))return;
+  el.classList.toggle('selected');
+}
+function submitWordGame(correctIdxs,char){
+  const allOpts=document.querySelectorAll('#chineseContent .mul-opt');
+  const selected=[];
+  allOpts.forEach((o,i)=>{
+    o.classList.add('disabled-after');
+    if(o.classList.contains('selected'))selected.push(i);
+  });
+  const s=charGameState;
+  const correctSet=new Set(correctIdxs);
+  const selectedSet=new Set(selected);
+  const allCorrectSelected=correctIdxs.every(i=>selectedSet.has(i));
+  const noWrongSelected=selected.every(i=>correctSet.has(i));
+  if(allCorrectSelected&&noWrongSelected){
+    s.correct++;
+    const cheers=['太棒了！🎉','答对了！⭐','真厉害！💪','非常好！👍','满分！💯','你真聪明！🧠'];
+    const cheer=cheers[Math.floor(Math.random()*cheers.length)];
+    const reward=document.createElement('div');
+    reward.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#00B894,#55EFC4);color:white;font-size:32px;font-weight:900;padding:24px 40px;border-radius:20px;z-index:9999;text-align:center;box-shadow:0 8px 32px rgba(0,184,148,0.4);animation:popIn 0.3s ease';
+    reward.textContent=cheer;
+    document.body.appendChild(reward);
+    setTimeout(()=>reward.remove(),800);
+  }else{
+    // 标绿正确答案
+    correctIdxs.forEach(i=>allOpts[i].classList.add('correct'));
+    // 标红选错的
+    selected.forEach(i=>{if(!correctSet.has(i))allOpts[i].classList.add('wrong');});
+    // 橙色标漏选的
+    correctIdxs.forEach(i=>{if(!selectedSet.has(i))allOpts[i].classList.add('missed');});
+    const notice=document.createElement('div');
+    notice.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;max-width:500px;width:90%';
+    notice.innerHTML='<div style="background:#FFF9E6;padding:10px 14px;border-radius:10px;border-left:4px solid #F39C12;font-size:15px;color:#555">正确答案已标绿，请记住！</div>';
     document.body.appendChild(notice);
     setTimeout(()=>notice.remove(),2000);
   }
